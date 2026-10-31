@@ -1,0 +1,40 @@
+{
+ "source": "Ji, Yue, Shao & Zhu (2026), Second-life LFP battery dataset v2, Zenodo doi:10.5281/zenodo.18630889, CC BY 4.0",
+ "sessions": [
+  {
+   "id": "A",
+   "role": "unseen",
+   "lab_capacity_Ah": 3.422,
+   "rows": 2401,
+   "duration_s": 2400.0
+  },
+  {
+   "id": "B",
+   "role": "calibration",
+   "lab_capacity_Ah": 4.871,
+   "rows": 2401,
+   "duration_s": 2400.0
+  },
+  {
+   "id": "C",
+   "role": "calibration",
+   "lab_capacity_Ah": 5.596,
+   "rows": 2401,
+   "duration_s": 2400.0
+  },
+  {
+   "id": "D",
+   "role": "calibration",
+   "lab_capacity_Ah": 4.537,
+   "rows": 2401,
+   "duration_s": 2400.0
+  },
+  {
+   "id": "E",
+   "role": "short",
+   "lab_capacity_Ah": 3.422,
+   "rows": 241,
+   "duration_s": 240.0
+  }
+ ]
+}

@@ -1,40 +1,56 @@
-# BatteryTruth — interactive pitch demo
+# BatteryTruth
 
-**Know your battery. No special tools.** Software that watches ordinary EV charging and tells you how healthy the battery is — with an honest range, and a clear "not enough evidence yet" when it can't tell. Next on the roadmap: charging advice that helps the battery last, and a fair battery value for resale.
+**Know your battery. No special tools.** BatteryTruth reads ordinary EV charging data, tells you how healthy the battery is with an honest range, and its AI Coach shows you how to charge so the battery lasts.
 
-A ~95-second auto-playing story (15 scenes) plus an interactive "Try it" view, in English and Vietnamese, with light and dark themes. Plain HTML + CSS + SVG + JavaScript: no libraries, no external requests, no tracking. Works offline.
+This repository has two parts:
 
-## Open it
+| Part | Path | What it is |
+|---|---|---|
+| Pitch | [`index.html`](index.html) | ~95-second auto-playing story (15 scenes) + an interactive view, English / Tiếng Việt, light / dark |
+| App | [`app/`](app/) | The working product demo: Smart charging (AI Coach), Battery check, Ask AI |
+| API | [`api/`](api/) | FastAPI server: the same battery model, the AI Coach with a server-side key, and the website |
 
-- Online: the GitHub Pages link of this repository.
-- Offline: double-click `index.html`, or run `python -m http.server 8080` in this folder and open <http://localhost:8080>.
+The pitch's **▶ Live app** button opens the app.
 
-## Controls
+## The app
 
-| Key | Action |
-|---|---|
-| Space | play / pause the story |
-| ← / → | previous / next scene |
-| R | restart |
-| F | fullscreen |
-| M | manual lock (no auto-resume) |
-| T | interactive "Try it" view |
-| L | English / Tiếng Việt |
-| D | light / dark theme |
+- **Smart charging** — enter the temperature, current charge, departure time, trip and chargers (or tap a scenario such as *36°C, leaving in 1 hour*). BatteryTruth picks AC or DC, the target %, when to start, and shows a battery-stress score with what drives it. **AI Coach** (Claude, `claude-opus-5-5`) turns the plan into personal advice.
+- **Battery check** — choose a charging session or upload a log (`elapsed_s, voltage_V, current_A`, one row per second or faster). The model estimates capacity checkpoint by checkpoint (5, 10, 15, 20, 30, 40 min) and reports only when the range is within ±0.5 Ah and the data match what it has learned. It runs entirely in the browser; the result is identical to the Python model.
+- **Ask AI** — follow-up chat that knows your scenario and latest battery check.
 
-When idle for 12 seconds, the story resumes automatically (kiosk mode) unless manual lock is on.
+### AI connection
 
-## What the numbers mean
+Open the **AI** button in the app:
 
-- **Lab results** come from experiments on public battery-cell datasets (23 second-life LFP cells and 21 NMC cells, each cell tested while held out of training). They are **not** EV-pack validation, certified state-of-health percentages, lifetime forecasts or safety ratings.
-- **Charging advice and battery valuation are concepts** shown on an illustrative screen; no experiments have been run on them yet.
-- Ranges and sessions in the animated decision views illustrate the decision flow.
-- Market segments and the business model are proposals, not deployments.
+- **BatteryTruth server** — run `api/server.py` with `ANTHROPIC_API_KEY` set; the key never reaches the browser.
+- **My Anthropic API key** — for the static site (GitHub Pages). The key stays on the device and is sent only to `api.anthropic.com`.
+- **AI off** — the rule-based plan still works and nothing is sent anywhere.
 
-## External sources
+## Run locally
 
+```bat
+start_demo.bat            :: static site on http://localhost:8080 (pitch + app, AI via your own key)
+api\start_api.bat         :: full stack on http://127.0.0.1:8787/app/ (set ANTHROPIC_API_KEY first)
+```
+
+The app uses ES modules and `fetch`, so open it through one of these servers rather than by double-clicking the file.
+
+### API
+
+| Method | Path | Body | Returns |
+|---|---|---|---|
+| GET | `/api/status` | — | service, model and AI availability |
+| POST | `/api/health-check` | `{"observations": [[t_s, V, A], ...]}` | decision, checkpoints, capacity range |
+| POST | `/api/coach/advise` | `{"context": {...}}` | `{headline, actions, why, watch_out}` |
+| POST | `/api/coach/chat` | `{"context": {...}, "history": [...]}` | `{reply}` |
+
+## Numbers and sources
+
+- Battery-check accuracy: 23 second-life LFP cells and 21 NMC cells, each cell tested while held out of training.
+- Sample sessions: Ji, Yue, Shao & Zhu (2026), *Second-life LFP battery dataset v2*, Zenodo, doi:10.5281/zenodo.18630889, CC BY 4.0.
 - IEA, *Global EV Outlook 2025*: more than 17 million electric cars sold worldwide in 2024; almost 58 million on the road at the end of 2024.
 - AA & Electrifying.com survey of 13,000+ UK drivers (published 25 Aug 2026): 3% feel confident buying a used EV; 38% say an independently verified battery-health certificate would increase their confidence.
 - Regulation (EU) 2023/1542: the battery passport becomes mandatory for EV batteries from 18 February 2027, including state-of-health data.
+- Charging advice follows general battery-care principles; the car maker's instructions always come first.
 
-Photo credits: see [CREDITS.md](CREDITS.md).
+Photo credits: [CREDITS.md](CREDITS.md). Bundled Anthropic TypeScript SDK 1.3.0: MIT licence, [`app/vendor/LICENSE-anthropic-sdk.txt`](app/vendor/LICENSE-anthropic-sdk.txt).

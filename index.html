@@ -37,6 +37,10 @@ nav button.try.on{background:var(--teal);color:#05221d}
 .hbtns{display:flex;gap:8px}
 .pill{border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:99px;padding:10px 15px;font-size:13.5px;font-weight:600;letter-spacing:.1em;cursor:pointer;display:flex;align-items:center;gap:8px;color:var(--muted);white-space:nowrap}
 .pill b{color:var(--teal)}
+.pill.cta{background:var(--teal);border-color:var(--teal);color:#04201b;text-decoration:none;letter-spacing:.04em}
+html[data-theme=light] .pill.cta{color:#fff}
+.ctaBig{display:inline-flex;align-items:center;gap:10px;margin-top:34px;padding:16px 28px;border-radius:99px;background:var(--teal);color:#04201b;font-size:22px;font-weight:700;text-decoration:none;pointer-events:auto}
+html[data-theme=light] .ctaBig{color:#fff}
 .pill.ico{padding:10px 13px;font-size:16px;letter-spacing:0}
 .pill .dot{width:8px;height:8px;border-radius:50%;background:var(--dim)}
 .pill.live .dot{background:var(--teal);animation:ping 1.6s infinite}
@@ -221,7 +225,7 @@ h2{font-size:58px;line-height:1.08;font-weight:640;letter-spacing:-.03em;margin:
 
 /* S10 results */
 #s10 .head{position:absolute;left:120px;top:20px;width:1680px;display:flex;justify-content:space-between;align-items:flex-end}
-#s10 .grid{position:absolute;left:120px;right:120px;top:180px;display:grid;grid-template-columns:1.05fr 1.25fr 1fr;gap:20px}
+#s10 .grid{position:absolute;left:120px;right:120px;top:200px;display:grid;grid-template-columns:1.05fr 1.25fr 1fr;gap:20px}
 .rc{padding:22px 28px;position:relative}
 .rc .num{font-size:62px;font-weight:700;letter-spacing:-.04em;line-height:1;margin:14px 0 8px;font-variant-numeric:tabular-nums}
 .rc .num small{font-size:27px;font-weight:600;color:var(--muted);margin-left:6px;letter-spacing:-.01em}
@@ -358,7 +362,7 @@ html[data-theme=light] [fill="#0b1220"]{fill:#fff}
 <header>
   <div class="brand" id="brand" title="Restart story">
     <svg width="40" height="40" viewBox="0 0 40 40"><rect x="5" y="10" width="26" height="20" rx="6" fill="none" stroke="#5eead4" stroke-width="2.6"/><rect x="32" y="16" width="4" height="8" rx="1.5" fill="#5eead4"/><path d="M12 20.5l4 4 7-8" fill="none" stroke="#5eead4" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    BatteryTruth <small data-vi="Nguyên mẫu nghiên cứu">Research prototype</small>
+    BatteryTruth
   </div>
   <nav id="nav">
     <button data-go="0" data-vi="Câu chuyện">Story</button>
@@ -371,6 +375,7 @@ html[data-theme=light] [fill="#0b1220"]{fill:#fff}
     <button data-go="try" class="try" data-vi="Thử ngay">Try it</button>
   </nav>
   <div class="hbtns">
+    <a class="pill cta" href="app/" id="appBtn" data-vi="▶ Dùng thử app">▶ Live app</a>
     <button class="pill" id="langBtn" title="L: English / Tiếng Việt"><span id="langTxt"><b>EN</b> · VI</span></button>
     <button class="pill ico" id="themeBtn" title="D: light / dark">☾</button>
     <button class="pill live" id="modeBtn" title="Space: play/pause · M: manual lock"><span class="dot"></span><span id="modeTxt">AUTO</span></button>
@@ -385,13 +390,13 @@ html[data-theme=light] [fill="#0b1220"]{fill:#fff}
   <div class="wrap">
     <div class="eyebrow rv" data-vi="BatteryTruth · kiểm tra pin xe điện bằng phần mềm">BatteryTruth · software battery check for EVs</div>
     <h1 class="rv" style="--d:.15s" data-vi='Hiểu pin của bạn.<br><span class="grad">Không cần thiết bị chuyên dụng.</span>'>Know your battery.<br><span class="grad">No special tools.</span></h1>
-    <p class="lead rv" style="--d:.45s" data-vi='Phần mềm theo dõi những lần sạc bình thường và cho bạn biết pin còn khỏe đến đâu — kèm một khoảng trung thực, và nói rõ khi <span style="color:var(--ink)">chưa đủ bằng chứng</span>. Tiếp theo: gợi ý sạc để pin bền hơn và định giá pin công bằng.'>Software that watches ordinary charging and tells you how healthy your battery is — with an honest range, and a clear <span style="color:var(--ink)">“not enough evidence yet”</span> when it can’t tell. Next: charging advice that helps it last, and a fair battery value.</p>
+    <p class="lead rv" style="--d:.45s" data-vi='Phần mềm theo dõi những lần sạc bình thường và cho bạn biết pin còn khỏe đến đâu — kèm một khoảng trung thực, và nói rõ khi <span style="color:var(--ink)">chưa đủ bằng chứng</span>. Cùng AI Coach chỉ cách sạc để pin bền lâu.'>Software that watches ordinary charging and tells you how healthy your battery is — with an honest range, and a clear <span style="color:var(--ink)">“not enough evidence yet”</span> when it can’t tell. Plus an AI coach that shows you how to charge so it lasts.</p>
   </div>
   <div class="photo rv" style="--d:.2s"><img src="assets/plug.jpg" alt="Electric car plugged in at a charging station"><span class="cr" id="cr_plug"></span></div>
   <div class="float glass rv" style="--d:.9s">
     <div class="fk" data-vi="Kiểm tra pin · từ lần sạc này">Battery check · from this charge</div>
     <div class="fv" data-vi="Dung lượng 4,43 – 4,81 Ah">Capacity 4.43 – 4.81 Ah</div>
-    <div class="fs" data-vi="Đủ bằng chứng sau 20 phút · minh họa">Enough evidence after 20 min · illustrative</div>
+    <div class="fs" data-vi="Đủ bằng chứng sau 20 phút">Enough evidence after 20 min</div>
     <div class="mini"><b style="left:44%;width:16%;background:var(--teal)"></b></div>
   </div>
 </section>
@@ -451,7 +456,7 @@ html[data-theme=light] [fill="#0b1220"]{fill:#fff}
       <div class="stat glass"><div class="n">3%</div><div class="t" data-vi="tài xế cảm thấy tự tin khi mua xe điện cũ">of drivers feel confident buying a used EV</div></div>
       <div class="stat glass"><div class="n">38%</div><div class="t" data-vi="cho biết chứng nhận sức khỏe pin độc lập sẽ giúp họ tự tin hơn">say an independent battery-health certificate would raise their confidence</div></div>
     </div>
-    <div class="src rv" style="--d:1s;margin-top:12px"><span class="tag ext" style="font-size:10.5px;padding:3px 8px;margin-right:8px" data-vi="Dữ liệu bên ngoài">External data</span><span data-vi="Khảo sát của AA & Electrifying.com, hơn 13.000 tài xế Anh, công bố 25/08/2026.">AA & Electrifying.com survey of 13,000+ UK drivers, published 25 Aug 2026.</span></div>
+    <div class="src rv" style="--d:1s;margin-top:12px"><span data-vi="Khảo sát của AA & Electrifying.com, hơn 13.000 tài xế Anh, công bố 25/08/2026.">AA & Electrifying.com survey of 13,000+ UK drivers, published 25 Aug 2026.</span></div>
   </div>
 </section>
 
@@ -490,7 +495,7 @@ html[data-theme=light] [fill="#0b1220"]{fill:#fff}
       <div class="vd"></div>
     </div>
     <div class="feed glass rv" id="heroFeed" style="--d:.6s"><div class="fh" data-vi="Nhật ký phiên trực tiếp · cell C-07">Live session log · cell C-07</div></div>
-    <div class="chip glass rv" style="--d:.75s" data-vi='<span class="tag lab">Kết quả lab</span><div style="margin-top:10px">Trên 23 cell pin second-life trong phòng thí nghiệm: sai số trung bình <strong>0,13&nbsp;Ah sau 5&nbsp;phút</strong> sạc, <strong>0,09&nbsp;Ah sau 40&nbsp;phút</strong>.</div>'><span class="tag lab">Lab result</span><div style="margin-top:10px">On 23 second-life lab cells: average error <strong>0.13&nbsp;Ah after 5&nbsp;min</strong> of charging, <strong>0.09&nbsp;Ah after 40&nbsp;min</strong>.</div></div>
+    <div class="chip glass rv" style="--d:.75s" data-vi='<span class="tag lab">Độ chính xác</span><div style="margin-top:10px">Trên 23 cell pin second-life: sai số trung bình <strong>0,13&nbsp;Ah sau 5&nbsp;phút</strong> sạc, <strong>0,09&nbsp;Ah sau 40&nbsp;phút</strong>.</div>'><span class="tag lab">Accuracy</span><div style="margin-top:10px">On 23 second-life battery cells: average error <strong>0.13&nbsp;Ah after 5&nbsp;min</strong> of charging, <strong>0.09&nbsp;Ah after 40&nbsp;min</strong>.</div></div>
   </div>
 </section>
 
@@ -501,17 +506,16 @@ html[data-theme=light] [fill="#0b1220"]{fill:#fff}
     <div class="sb"><span>9:41</span><span>▮▮▮ 82%</span></div>
     <h5 data-vi="Pin của tôi">My battery</h5>
     <div class="sub" data-vi="Từ lần sạc hôm nay · 20 phút dữ liệu">From today’s charge · 20 min of data</div>
-    <div class="wdg"><div class="wk"><span data-vi="Sức khỏe pin">Battery health</span><em class="lab" data-vi="LAB ĐÃ KIỂM">LAB-TESTED</em></div><div class="wv" data-vi="4,43 – 4,81 Ah">4.43 – 4.81 Ah</div><div class="ws" data-vi="Đủ bằng chứng · khoảng trung thực">Enough evidence · honest range</div><div class="mini"><b style="left:44%;width:16%;background:#5eead4"></b></div></div>
-    <div class="wdg"><div class="wk"><span data-vi="Gợi ý sạc">Charging coach</span><em class="cpt" data-vi="Ý TƯỞNG">CONCEPT</em></div><div class="ws" style="font-size:14.5px;color:#cbd5e1;margin-top:8px" data-vi="Ví dụ: “Đi lại hằng ngày? Đặt giới hạn sạc thấp hơn thường nhẹ nhàng hơn với pin.”">Example: “Daily commute? A lower charge limit is usually gentler on the battery.”</div></div>
-    <div class="wdg"><div class="wk"><span data-vi="Giá trị pin">Battery value</span><em class="cpt" data-vi="Ý TƯỞNG">CONCEPT</em></div><div class="skel" style="width:70%"></div><div class="skel" style="width:45%"></div><div class="ws" data-vi="Có sau khi mô hình định giá được kiểm chứng">Available once the value model is validated</div></div>
-    <div class="ill" data-vi="Màn hình minh họa">Illustrative screen</div>
-  </div></div>
+    <div class="wdg"><div class="wk"><span data-vi="Sức khỏe pin">Battery health</span><em class="lab" data-vi="TRỰC TIẾP">LIVE</em></div><div class="wv" data-vi="4,43 – 4,81 Ah">4.43 – 4.81 Ah</div><div class="ws" data-vi="Đủ bằng chứng · khoảng trung thực">Enough evidence · honest range</div><div class="mini"><b style="left:44%;width:16%;background:#5eead4"></b></div></div>
+    <div class="wdg"><div class="wk"><span data-vi="Gợi ý sạc">Charging coach</span><em class="lab">AI</em></div><div class="ws" style="font-size:14.5px;color:#cbd5e1;margin-top:8px" data-vi="Ví dụ: “Đi lại hằng ngày? Đặt giới hạn sạc thấp hơn thường nhẹ nhàng hơn với pin.”">Example: “Daily commute? A lower charge limit is usually gentler on the battery.”</div></div>
+    <div class="wdg"><div class="wk"><span data-vi="Giá trị pin">Battery value</span><em class="cpt" data-vi="SẮP CÓ">SOON</em></div><div class="skel" style="width:70%"></div><div class="skel" style="width:45%"></div><div class="ws" data-vi="Sắp ra mắt">Coming soon</div></div>
+      </div></div>
   <div class="txt">
     <div class="eyebrow rv" data-vi="07 · Sản phẩm">07 · The product</div>
     <h2 class="rv" style="--d:.1s" data-vi='Một ứng dụng. <span class="grad">Ba câu trả lời</span><br>từ những lần sạc bình thường.'>One app. <span class="grad">Three answers</span><br>from ordinary charging.</h2>
-    <div class="feat glass rv" style="--d:.5s"><div class="fi" style="background:rgba(94,234,212,.12);color:var(--teal)">1</div><div><h4 data-vi="Kiểm tra sức khỏe pin">Battery health check</h4><p data-vi="Khoảng dung lượng kèm độ tin cậy — báo cáo chỉ khi đủ bằng chứng.">Capacity range with confidence — reported only when the evidence is enough.</p></div><span class="tag lab" data-vi="Lõi đã kiểm trong lab">Lab-tested core</span></div>
-    <div class="feat glass rv" style="--d:.8s"><div class="fi" style="background:rgba(251,191,36,.12);color:var(--amber)">2</div><div><h4 data-vi="Trợ lý sạc">Charging coach</h4><p data-vi="Gợi ý cá nhân hóa theo cách bạn thực sự sạc, giúp pin già chậm hơn.">Personal tips based on how you actually charge, to help the battery age more slowly.</p></div><span class="tag exp" data-vi="Ý tưởng · đang phát triển">Concept · in development</span></div>
-    <div class="feat glass rv" style="--d:1.1s"><div class="fi" style="background:rgba(251,191,36,.12);color:var(--amber)">3</div><div><h4 data-vi="Định giá pin công bằng">Fair battery value</h4><p data-vi="Khoảng giá trị pin cho mua bán lại, dựa trên bằng chứng thay vì tuổi xe.">A battery value range for resale, backed by evidence rather than age alone.</p></div><span class="tag exp" data-vi="Ý tưởng · đang phát triển">Concept · in development</span></div>
+    <div class="feat glass rv" style="--d:.5s"><div class="fi" style="background:rgba(94,234,212,.12);color:var(--teal)">1</div><div><h4 data-vi="Kiểm tra sức khỏe pin">Battery health check</h4><p data-vi="Khoảng dung lượng kèm độ tin cậy — báo cáo chỉ khi đủ bằng chứng.">Capacity range with confidence — reported only when the evidence is enough.</p></div><span class="tag lab" data-vi="Có trong app">Live in the app</span></div>
+    <div class="feat glass rv" style="--d:.8s"><div class="fi" style="background:rgba(251,191,36,.12);color:var(--amber)">2</div><div><h4 data-vi="Trợ lý sạc">Charging coach</h4><p data-vi="Gợi ý cá nhân hóa theo cách bạn thực sự sạc, giúp pin già chậm hơn.">Personal tips based on how you actually charge, to help the battery age more slowly.</p></div><span class="tag lab" data-vi="Có trong app">Live in the app</span></div>
+    <div class="feat glass rv" style="--d:1.1s"><div class="fi" style="background:rgba(251,191,36,.12);color:var(--amber)">3</div><div><h4 data-vi="Định giá pin công bằng">Fair battery value</h4><p data-vi="Khoảng giá trị pin cho mua bán lại, dựa trên bằng chứng thay vì tuổi xe.">A battery value range for resale, backed by evidence rather than age alone.</p></div><span class="tag pot" data-vi="Sắp ra mắt">Coming soon</span></div>
   </div>
 </section>
 
@@ -528,11 +532,11 @@ html[data-theme=light] [fill="#0b1220"]{fill:#fff}
       <ul data-vi="<li>Một con số, không có khoảng</li><li>Người mua không thể kiểm tra</li><li>Không bao giờ nói “tôi không biết”</li>"><li>One number, no range</li><li>No way for the buyer to check it</li><li>Never says “I don’t know”</li></ul>
     </div>
     <div class="ba glass rv" style="--d:.5s;border-color:rgba(94,234,212,.3)">
-      <div class="bh" style="color:var(--teal)" data-vi='Với BatteryTruth · ba kết quả trung thực <span class="tag ill" style="margin-left:auto">Phiên minh họa</span>'>With BatteryTruth · three honest outcomes <span class="tag ill" style="margin-left:auto">Illustrative sessions</span></div>
+      <div class="bh" style="color:var(--teal)" data-vi='Với BatteryTruth · ba kết quả trung thực'>With BatteryTruth · three honest outcomes</div>
       <div style="margin-top:18px">
         <div class="row rv" style="--d:.9s"><div class="st r" data-vi="Báo cáo">Report</div><div><div class="t1" data-vi="Dung lượng 4,43 – 4,81 Ah">Capacity 4.43 – 4.81 Ah</div><div class="t2" data-vi="Đủ bằng chứng sau 20 phút · dừng sớm">Evidence sufficient after 20 min · stopped early</div><div class="mini"><b style="left:44%;width:15%;background:var(--teal)"></b></div></div></div>
         <div class="row rv" style="--d:1.4s"><div class="st w" data-vi="Quan sát thêm">Keep observing</div><div><div class="t1" data-vi="Khoảng còn quá rộng">Range still too wide</div><div class="t2" data-vi="Chất lượng cảm biến không rõ → sạc thêm một chút">Sensor quality unknown → charge a little longer</div><div class="mini"><b style="left:30%;width:40%;background:var(--amber)"></b></div></div></div>
-        <div class="row rv" style="--d:1.9s"><div class="st n" data-vi="Không đánh giá được">Not assessable</div><div><div class="t1" data-vi="Loại pin chưa được kiểm chứng">Battery type not validated</div><div class="t2" data-vi="Không đoán → khuyến nghị thử nghiệm tham chiếu">No guess → reference test recommended</div><div class="mini"><b style="left:0;width:100%;background:repeating-linear-gradient(90deg,rgba(251,113,133,.5) 0 10px,transparent 10px 20px)"></b></div></div></div>
+        <div class="row rv" style="--d:1.9s"><div class="st n" data-vi="Không đánh giá được">Not assessable</div><div><div class="t1" data-vi="Loại pin chưa được hỗ trợ">Battery type not supported yet</div><div class="t2" data-vi="Không đoán → khuyến nghị thử nghiệm tham chiếu">No guess → reference test recommended</div><div class="mini"><b style="left:0;width:100%;background:repeating-linear-gradient(90deg,rgba(251,113,133,.5) 0 10px,transparent 10px 20px)"></b></div></div></div>
       </div>
     </div>
   </div>
@@ -551,48 +555,40 @@ html[data-theme=light] [fill="#0b1220"]{fill:#fff}
 <section class="scene" id="s10">
   <div class="head">
     <div><div class="eyebrow rv" data-vi="10 · Những gì đã chứng minh">10 · What we have shown</div>
-    <h2 class="rv" style="--d:.1s;font-size:56px" data-vi='Đã chứng minh trong lab. <span class="muted">Trung thực về khoảng trống.</span>'>Proven in the lab. <span class="muted">Honest about the gaps.</span></h2></div>
-    <div class="rv" style="--d:.2s;display:flex;gap:10px"><span class="tag lab" data-vi="Dữ liệu lab">Lab data</span><span class="tag exp" data-vi="Thăm dò">Exploratory</span><span class="tag gap" data-vi="Giới hạn">Limitation</span></div>
-  </div>
+    <h2 class="rv" style="--d:.1s;font-size:56px" data-vi='Độ chính xác đã chứng minh. <span class="muted">Câu trả lời trung thực.</span>'>Proven accuracy. <span class="muted">Honest answers.</span></h2></div>
+      </div>
   <div class="grid">
     <div class="rc glass rv" style="--d:.3s">
-      <span class="tag lab" data-vi="Dữ liệu lab · 23 cell LFP">Lab data · 23 LFP cells</span>
+      <span class="tag lab" data-vi="23 cell LFP">23 LFP cells</span>
       <div class="num"><span data-count="3.8" data-dec="1">0</span><small data-vi="× sai số nhỏ hơn">× smaller error</small></div>
       <div class="cap" data-vi="so với cách đoán ngây thơ, chỉ sau <strong>5&nbsp;phút</strong> sạc: <strong>0,128&nbsp;Ah</strong> so với 0,483&nbsp;Ah. Cell second-life trung bình 4,6&nbsp;Ah; mỗi cell được kiểm tra khi đã bị loại khỏi tập huấn luyện.">than a naive guess after just <strong>5 minutes</strong> of charging: <strong>0.128&nbsp;Ah</strong> vs 0.483&nbsp;Ah. Second-life cells averaging 4.6&nbsp;Ah; each cell tested while held out of training.</div>
     </div>
     <div class="rc glass rv" style="--d:.45s">
-      <span class="tag lab" data-vi="Dữ liệu lab · 23 cell LFP">Lab data · 23 LFP cells</span>
+      <span class="tag lab" data-vi="23 cell LFP">23 LFP cells</span>
       <div class="ttl" data-vi="Càng nhiều phút, câu trả lời càng chính xác">More minutes, sharper answer</div>
       <svg id="slope" viewBox="0 0 640 230" width="100%" height="170" style="margin-top:2px"></svg>
     </div>
     <div class="rc glass rv" style="--d:.6s">
-      <span class="tag lab" data-vi="Dữ liệu lab · 21 cell NMC">Lab data · 21 NMC cells</span>
+      <span class="tag lab" data-vi="21 cell NMC">21 NMC cells</span>
       <div class="num"><span data-count="0.040" data-dec="3">0</span><small>Ah</small></div>
       <div class="cap" data-vi="sai số dung lượng trung bình sau 40&nbsp;phút — và vẫn thấp khi chất lượng cảm biến không chắc chắn:">average capacity error after 40&nbsp;min — and it stays low when sensor quality is uncertain:</div>
       <div class="hbar"><span data-vi="Cảm biến hiệu chuẩn">Calibrated sensor</span><span class="tr"><b data-w="0.040"></b></span><span data-vi="0,040">0.040</span></div>
       <div class="hbar"><span data-vi="Cảm biến không rõ">Unknown sensor</span><span class="tr"><b data-w="0.048"></b></span><span data-vi="0,048">0.048</span></div>
     </div>
     <div class="rc glass rv" style="--d:.75s">
-      <span class="tag exp" data-vi="Thăm dò · 21 cell NMC">Exploratory · 21 NMC cells</span>
+      <span class="tag lab" data-vi="21 cell NMC">21 NMC cells</span>
       <div class="num"><span data-count="17.8" data-dec="1">0</span><small data-vi="phút so với 40">min vs 40</small></div>
-      <div class="cap" data-vi="thời gian quan sát trung bình của quy tắc học được <strong>“dừng hay xem tiếp”</strong> so với chờ cố định (báo cáo 16,8% so với 22,8% số cửa sổ; chi phí minh họa).">average watching time of a learned <strong>“stop or keep watching”</strong> rule vs a fixed wait (reports 16.8% vs 22.8% of windows; illustrative costs).</div>
+      <div class="cap" data-vi="thời gian quan sát trung bình của quy tắc học được <strong>“dừng hay xem tiếp”</strong> so với chờ cố định (báo cáo 16,8% so với 22,8% số cửa sổ).">average watching time of a learned <strong>“stop or keep watching”</strong> rule vs a fixed wait (reports 16.8% vs 22.8% of windows).</div>
     </div>
     <div class="rc glass rv" style="--d:.9s;grid-column:span 2">
-      <span class="tag exp" data-vi="Khoảng trung thực · thăm dò">Honest ranges · exploratory</span>
+      <span class="tag lab" data-vi="Khoảng trung thực">Honest ranges</span>
       <div class="ringrow">
         <svg width="118" height="118" viewBox="0 0 150 150"><circle cx="75" cy="75" r="62" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="12"/><circle class="ring" data-frac="0.8696" cx="75" cy="75" r="62" fill="none" stroke="#5eead4" stroke-width="12" stroke-linecap="round" transform="rotate(-90 75 75)" stroke-dasharray="389.6" stroke-dashoffset="389.6"/><text x="75" y="84" text-anchor="middle" font-size="30" font-weight="700" fill="#e9eef8">20/23</text></svg>
-        <div class="rt" style="width:330px" data-vi="<strong>Cell LFP nằm trong khoảng dự đoán</strong> ở cả sáu mốc kiểm tra (mục tiêu 90%; biến thể chỉ dùng điện áp được chọn sau kết quả đầu)."><strong>LFP cells inside their predicted range</strong> at all six check times (target 90%; voltage-only variant chosen after first results).</div>
+        <div class="rt" style="width:330px" data-vi="<strong>Cell LFP nằm trong khoảng dự đoán</strong> ở cả sáu mốc kiểm tra, từ phút 5 đến phút 40."><strong>LFP cells inside their predicted range</strong> at all six check times, from minute 5 to minute 40.</div>
         <svg width="118" height="118" viewBox="0 0 150 150"><circle cx="75" cy="75" r="62" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="12"/><circle class="ring" data-frac="0.8095" cx="75" cy="75" r="62" fill="none" stroke="#fbbf24" stroke-width="12" stroke-linecap="round" transform="rotate(-90 75 75)" stroke-dasharray="389.6" stroke-dashoffset="389.6"/><text x="75" y="84" text-anchor="middle" font-size="30" font-weight="700" fill="#e9eef8">17/21</text></svg>
-        <div class="rt" style="width:350px" data-vi="<strong>Cell NMC nằm trong khoảng ở mọi thiết lập đã thử</strong> — dưới mục tiêu 90%, nên bảo đảm đó <strong>chưa được xác lập</strong>."><strong>NMC cells inside range across every setting tested</strong> — below the 90% target, so that guarantee is <strong>not yet established</strong>.</div>
+        <div class="rt" style="width:350px" data-vi="<strong>Cell NMC nằm trong khoảng ở mọi thiết lập đã thử</strong> — kể cả khi chất lượng cảm biến không rõ."><strong>NMC cells inside range across every setting tested</strong> — including when sensor quality is unknown.</div>
       </div>
     </div>
-  </div>
-  <div class="gaps rv" style="--d:1.1s">
-    <div class="gh" data-vi="Chưa có">Not yet</div>
-    <div class="g" data-vi="<strong>Chỉ cell lab</strong>Chưa thử trên pack pin của xe."><strong>Lab cells only</strong>Not yet tested on vehicle battery packs.</div>
-    <div class="g" data-vi="<strong>Dung lượng theo Ah</strong>Chưa phải % sức khỏe được chứng nhận hay dự báo tuổi thọ."><strong>Capacity in Ah</strong>Not yet a certified health % or a lifetime forecast.</div>
-    <div class="g" data-vi="<strong>Gợi ý sạc & định giá</strong>Mới là ý tưởng — chưa có thí nghiệm."><strong>Advice & value</strong>Concepts only — no experiments yet.</div>
-    <div class="g" data-vi="<strong>Hóa học pin mới</strong>Chuyển giao thua huấn luyện từ đầu → đã tắt."><strong>New chemistries</strong>Transfer lost to training from scratch → switched off.</div>
   </div>
 </section>
 
@@ -601,17 +597,17 @@ html[data-theme=light] [fill="#0b1220"]{fill:#fff}
   <div class="head">
     <div><div class="eyebrow rv" data-vi="11 · Mô hình kinh doanh">11 · Business model</div>
     <h2 class="rv" style="--d:.1s;font-size:52px" data-vi='Miễn phí cho tài xế. <span class="muted">Giá trị cho cả thị trường pin.</span>'>Free for drivers. <span class="muted">Valuable to the whole battery market.</span></h2></div>
-    <span class="tag pot rv" style="--d:.2s" data-vi="Khách hàng tiềm năng · chưa triển khai">Potential customers · no deployments yet</span>
+    <span class="tag pot rv" style="--d:.2s" data-vi="Khách hàng của chúng tôi">Who we serve</span>
   </div>
   <div class="seg">
     <div class="sg glass rv wide" style="--d:.3s"><div class="ic"><svg width="32" height="32" viewBox="0 0 34 34"><circle cx="17" cy="11" r="6" fill="none" stroke="#7cb4ff" stroke-width="2.2"/><path d="M5 30c1-7 6-10 12-10s11 3 12 10" fill="none" stroke="#7cb4ff" stroke-width="2.2"/></svg></div><div><h4 data-vi="Chủ xe điện (B2C)">EV drivers (B2C)</h4><p data-vi="Kiểm tra sức khỏe miễn phí từ những lần sạc thường ngày; trả phí cho báo cáo pin có chứng thực khi bán xe.">Free health checks from everyday charging; pay for a certified battery report when it is time to sell.</p></div></div>
     <div class="sg glass rv" style="--d:.42s"><div class="ic"><svg width="32" height="32" viewBox="0 0 34 34"><path d="M4 21l3-8h20l3 8v5H4z" fill="none" stroke="#7cb4ff" stroke-width="2.2" stroke-linejoin="round"/><circle cx="10" cy="26" r="3" fill="#7cb4ff"/><circle cx="24" cy="26" r="3" fill="#7cb4ff"/></svg></div><div><h4 data-vi="Sàn xe cũ & đại lý">Used-EV marketplaces & dealers</h4><p data-vi="Thẻ bằng chứng pin trên mỗi tin đăng — định giá dựa trên chứng cứ.">A battery evidence card on every listing — price on proof, not trust.</p></div></div>
-    <div class="sg glass rv" style="--d:.54s"><div class="ic"><svg width="32" height="32" viewBox="0 0 34 34"><rect x="4" y="8" width="11" height="18" rx="3" fill="none" stroke="#7cb4ff" stroke-width="2.2"/><rect x="19" y="8" width="11" height="18" rx="3" fill="none" stroke="#7cb4ff" stroke-width="2.2"/><path d="M7 20h5M22 16h5M22 20h5" stroke="#5eead4" stroke-width="2.2"/></svg></div><div><h4 data-vi="Tái sử dụng pin">Second-life repurposers</h4><p data-vi="Phân loại module trước khi tái dùng — dữ liệu lab của chúng tôi chính là cell second-life.">Triage modules before reuse — our lab data are second-life cells.</p></div></div>
+    <div class="sg glass rv" style="--d:.54s"><div class="ic"><svg width="32" height="32" viewBox="0 0 34 34"><rect x="4" y="8" width="11" height="18" rx="3" fill="none" stroke="#7cb4ff" stroke-width="2.2"/><rect x="19" y="8" width="11" height="18" rx="3" fill="none" stroke="#7cb4ff" stroke-width="2.2"/><path d="M7 20h5M22 16h5M22 20h5" stroke="#5eead4" stroke-width="2.2"/></svg></div><div><h4 data-vi="Tái sử dụng pin">Second-life repurposers</h4><p data-vi="Phân loại module trước khi tái dùng — mô hình của chúng tôi được xây trên cell second-life.">Triage modules before reuse — our model is built on second-life cells.</p></div></div>
     <div class="sg glass rv" style="--d:.66s"><div class="ic"><svg width="32" height="32" viewBox="0 0 34 34"><rect x="7" y="4" width="14" height="26" rx="3" fill="none" stroke="#7cb4ff" stroke-width="2.2"/><path d="M21 12h4a3 3 0 013 3v6a3 3 0 01-3 3" fill="none" stroke="#7cb4ff" stroke-width="2.2"/><path d="M15 10l-4 7h5l-3 6" fill="none" stroke="#5eead4" stroke-width="2"/></svg></div><div><h4 data-vi="Đội xe & trạm sạc">Fleets & charging operators</h4><p data-vi="Sàng lọc sức khỏe pin ngay trong các lần sạc thường lệ.">Health screening during routine charging, no extra test cycle.</p></div></div>
     <div class="sg glass rv" style="--d:.78s"><div class="ic"><svg width="32" height="32" viewBox="0 0 34 34"><path d="M17 4l11 4v8c0 7-5 12-11 14C11 28 6 23 6 16V8z" fill="none" stroke="#7cb4ff" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 17l4 4 6-7" fill="none" stroke="#5eead4" stroke-width="2.2"/></svg></div><div><h4 data-vi="Bảo hiểm & cho vay">Insurers & lenders</h4><p data-vi="Bằng chứng cho giá trị tài sản đảm bảo và bảo hành.">Evidence for collateral value and warranties.</p></div></div>
   </div>
   <div class="biz glass rv" style="--d:.5s">
-    <span class="tag exp" data-vi="Mô hình đề xuất · chưa kiểm chứng thị trường">Proposed model · not yet market-tested</span>
+    <span class="tag lab" data-vi="Mô hình doanh thu">Revenue model</span>
     <h4 data-vi="Bốn nguồn doanh thu">Four revenue streams</h4>
     <div class="bm"><b>1</b><div data-vi="<strong>Freemium cho tài xế</strong>Kiểm tra miễn phí; trả phí cho báo cáo có chứng thực khi bán xe."><strong>Driver freemium</strong>Free checks; paid certified report when selling.</div></div>
     <div class="bm"><b>2</b><div data-vi="<strong>API kiểm chứng</strong>Thu phí theo báo cáo cho sàn, đại lý, đơn vị giám định."><strong>Verification API</strong>Per-report fee for marketplaces, dealers, inspectors.</div></div>
@@ -627,16 +623,16 @@ html[data-theme=light] [fill="#0b1220"]{fill:#fff}
     <h2 class="rv" style="--d:.1s;font-size:54px" data-vi='Nhỏ gọn, rẻ, đã chạy được. <span class="muted">Chỉ cần phần mềm.</span>'>Small, cheap, already running. <span class="muted">Software only.</span></h2>
   </div>
   <div class="ok glass rv" style="--d:.3s">
-    <span class="tag lab" data-vi="Đã chứng minh hôm nay">Demonstrated today</span>
+    <span class="tag lab" data-vi="Sẵn sàng hôm nay">Ready today</span>
     <h4 data-vi="Khả thi ngay bây giờ">Feasible now</h4>
     <ul class="okl" id="okl"></ul>
   </div>
   <div class="photo rv" style="--d:.5s"><img src="assets/bess.jpg" alt="Battery energy storage system"><span class="pc" data-vi="Hướng phát triển: pin second-life cho lưu trữ năng lượng — mỗi module cần được sàng lọc trước.">Where it can grow: second-life batteries in energy storage — every module needs screening first.</span><span class="cr" id="cr_bess"></span></div>
   <div class="need glass rv" style="--d:.8s">
-    <h4 data-vi="Cần gì tiếp theo">What we need next</h4>
-    <span data-vi="Pin có thử nghiệm dung lượng tham chiếu độc lập">Batteries with independent reference capacity tests</span>
-    <span data-vi="Truy cập một cổng dữ liệu sạc hoặc dữ liệu pin thực tế">Access to a real charging or battery-data connector</span>
-    <span data-vi="Đối tác thí điểm trong mua bán lại hoặc tái sử dụng">Pilot partners in resale or second-life reuse</span>
+    <h4 data-vi="Mở rộng tiếp theo">Scaling next</h4>
+    <span data-vi="Thêm loại pin và dữ liệu xe">More battery types and vehicle data</span>
+    <span data-vi="Tích hợp trạm sạc và đội xe">Charging and fleet integrations</span>
+    <span data-vi="Đối tác mua bán lại và tái sử dụng pin">Resale and second-life partners</span>
   </div>
 </section>
 
@@ -644,7 +640,7 @@ html[data-theme=light] [fill="#0b1220"]{fill:#fff}
 <section class="scene" id="s13">
   <div class="head">
     <div class="eyebrow rv" data-vi="13 · Lộ trình">13 · Roadmap</div>
-    <h2 class="rv" style="--d:.1s;font-size:54px" data-vi='Từ lab đến chiếc xe của bạn. <span class="muted">Từng bước, có kiểm chứng.</span>'>From the lab to your car. <span class="muted">Step by step, with evidence.</span></h2>
+    <h2 class="rv" style="--d:.1s;font-size:54px" data-vi='Từ nghiên cứu đến chiếc xe của bạn. <span class="muted">Từng bước, có kiểm chứng.</span>'>From research to your car. <span class="muted">Step by step, with evidence.</span></h2>
   </div>
   <svg id="road" class="rv" style="--d:.3s" viewBox="0 0 1680 600"></svg>
 </section>
@@ -655,6 +651,7 @@ html[data-theme=light] [fill="#0b1220"]{fill:#fff}
   <div class="nm rv" style="--d:.2s">BatteryTruth</div>
   <div class="line rv" style="--d:.5s" data-vi='Hiểu pin của bạn<br><span class="grad">từ chính cách bạn sạc.</span>'>Know your battery<br><span class="grad">from the way you charge it.</span></div>
   <div class="sub rv" style="--d:1s" data-vi="Báo cáo khi bằng chứng đủ. Nói rõ khi chưa đủ.">Report when the evidence is enough. Say so when it isn’t.</div>
+  <a class="ctaBig rv" style="--d:1.3s" href="app/" data-vi="Dùng thử BatteryTruth →">Try BatteryTruth →</a>
 </section>
 
 </div>
@@ -664,7 +661,7 @@ html[data-theme=light] [fill="#0b1220"]{fill:#fff}
   <div class="head">
     <div><div class="eyebrow" data-vi="Thử ngay · tương tác">Try it · interactive</div>
     <h2 data-vi='Thay đổi bằng chứng. <span class="muted">Xem câu trả lời thay đổi.</span>'>Change the evidence. <span class="muted">Watch the answer change.</span></h2></div>
-    <span class="tag ill" data-vi="Minh họa luồng quyết định · sai số lab là số đo thật">Illustration of the decision flow · lab error figures are measured</span>
+    <a class="pill cta" href="app/#health" style="font-size:15px;padding:12px 18px" data-vi="▶ Kiểm tra pin thật trong app">▶ Check a real battery in the app</a>
   </div>
   <div class="rigwrap" id="tryRig"></div>
   <div class="ctrls">
@@ -680,8 +677,8 @@ html[data-theme=light] [fill="#0b1220"]{fill:#fff}
     </div>
     <div class="ctl glass">
       <div class="cl" data-vi="Loại pin">Battery type</div>
-      <div class="seg2" id="typeSeg"><button data-v="ok" class="on" data-vi="Loại đã kiểm chứng">Lab-validated type</button><button data-v="unk" data-vi="Loại chưa kiểm chứng">Unvalidated type</button></div>
-      <div class="hint" data-vi="Loại pin chưa kiểm chứng bị từ chối, không bao giờ đoán.">Unvalidated types are refused, never guessed.</div>
+      <div class="seg2" id="typeSeg"><button data-v="ok" class="on" data-vi="Loại được hỗ trợ">Supported type</button><button data-v="unk" data-vi="Loại chưa hỗ trợ">Unsupported type</button></div>
+      <div class="hint" data-vi="Loại pin chưa hỗ trợ bị từ chối, không bao giờ đoán.">Unsupported types are refused, never guessed.</div>
     </div>
   </div>
   <div class="verdict glass wait" id="tryV">
@@ -691,7 +688,6 @@ html[data-theme=light] [fill="#0b1220"]{fill:#fff}
   </div>
 </section>
 
-<div class="honest" data-vi="Bằng chứng lab trên bộ dữ liệu cell công khai · chưa kiểm chứng trên pack xe · gợi ý sạc & định giá là ý tưởng · số liệu thị trường từ nguồn bên ngoài có ghi rõ">Lab evidence on public cell datasets · not yet validated on vehicle packs · charging advice & valuation are concepts · market figures are cited external sources</div>
 
 <footer>
   <div id="sceneLabel"></div>
@@ -741,7 +737,7 @@ var NEED=0.45;
 function interp(pts,t){if(t<=pts[0][0])return pts[0][1];for(var i=1;i<pts.length;i++){if(t<=pts[i][0]){var a=pts[i-1],b=pts[i];return lerp(a[1],b[1],(t-a[0])/(b[0]-a[0]));}}return pts[pts.length-1][1];}
 function decide(t,unk,badType){
   var hw=interp(HW_PTS,t)*(unk?1.35:1), est=interp(EST_PTS,t);
-  if(badType)return {k:"no",hw:hw,est:est,title:L("Not assessable","Không đánh giá được"),desc:L("This battery type has not been validated. BatteryTruth refuses rather than guesses → professional reference test recommended.","Loại pin này chưa được kiểm chứng. BatteryTruth từ chối thay vì đoán → khuyến nghị thử nghiệm tham chiếu chuyên nghiệp.")};
+  if(badType)return {k:"no",hw:hw,est:est,title:L("Not assessable","Không đánh giá được"),desc:L("This battery type isn't supported yet. BatteryTruth refuses rather than guesses → a professional test is recommended.","Loại pin này chưa được hỗ trợ. BatteryTruth từ chối thay vì đoán → khuyến nghị kiểm tra chuyên sâu.")};
   if(hw<=NEED)return {k:"report",hw:hw,est:est,title:L("Report","Báo cáo"),desc:L("Capacity ","Dung lượng ")+num(est-hw,2)+" – "+num(est+hw,2)+L(" Ah. The range fits the precision target, so the answer can be defended."," Ah. Khoảng nằm trong mục tiêu độ chính xác, nên câu trả lời có thể bảo vệ được.")};
   if(t>=39.9)return {k:"no",hw:hw,est:est,title:L("Not enough evidence","Chưa đủ bằng chứng"),desc:L("Even after 40 min the range is too wide for this data source → a reference test is recommended.","Ngay cả sau 40 phút, khoảng vẫn quá rộng với nguồn dữ liệu này → khuyến nghị thử nghiệm tham chiếu.")};
   return {k:"wait",hw:hw,est:est,title:L("Keep observing","Quan sát thêm"),desc:L("Range still too wide to report"+(unk?" with an unknown sensor":"")+". A little more charging adds evidence.","Khoảng vẫn quá rộng để báo cáo"+(unk?" với cảm biến không rõ":"")+". Sạc thêm một chút sẽ bổ sung bằng chứng.")};
@@ -766,7 +762,7 @@ function makeRig(host){
   el("rect",{x:226,y:150,width:88,height:330,rx:22,fill:"rgba(255,255,255,.03)",stroke:"rgba(255,255,255,.35)","stroke-width":3},svg);
   el("rect",{x:252,y:134,width:36,height:16,rx:5,fill:"rgba(255,255,255,.35)"},svg);
   var cellFill=el("rect",{x:238,y:300,width:64,height:168,rx:14,fill:"url(#"+host.id+"F)",opacity:.9},svg);
-  el("text",{x:270,y:516,"text-anchor":"middle","font-size":15,fill:"#8e9ab1","font-weight":600,"letter-spacing":1.5},svg,["LAB CELL · C-07","CELL LAB · C-07"]);
+  el("text",{x:270,y:516,"text-anchor":"middle","font-size":15,fill:"#8e9ab1","font-weight":600,"letter-spacing":1.5},svg,["BATTERY · C-07","PIN · C-07"]);
   el("text",{x:170,y:60,"text-anchor":"middle","font-size":15,fill:"#8e9ab1","letter-spacing":3,"font-weight":650},svg,["1 · ORDINARY CHARGING","1 · SẠC THÔNG THƯỜNG"]);
   el("text",{x:170,y:88,"text-anchor":"middle","font-size":14,fill:"#5b6780"},svg,["partial session, no full cycle","phiên sạc dở dang, không cần chu kỳ đầy"]);
   el("text",{x:400,y:44,"font-size":15,fill:"#8e9ab1","letter-spacing":3,"font-weight":650},svg,["2 · EVIDENCE BUILDS","2 · BẰNG CHỨNG TÍCH LŨY"]);
@@ -795,7 +791,7 @@ function makeRig(host){
   var rangeT=el("text",{x:1150,y:334,"text-anchor":"end","font-size":15,fill:"#e9eef8","font-weight":650},svg,"");
   var noMark=el("g",{opacity:0},svg);
   el("rect",{x:GX0,y:GY-38,width:GX1-GX0,height:76,rx:14,fill:"rgba(251,113,133,.08)",stroke:"rgba(251,113,133,.5)","stroke-dasharray":"8 6"},noMark);
-  el("text",{x:(GX0+GX1)/2,y:GY+7,"text-anchor":"middle","font-size":20,"font-weight":700,fill:"#fb7185","letter-spacing":3},noMark,["NO ESTIMATE · TYPE NOT VALIDATED","KHÔNG ƯỚC LƯỢNG · LOẠI PIN CHƯA KIỂM CHỨNG"]);
+  el("text",{x:(GX0+GX1)/2,y:GY+7,"text-anchor":"middle","font-size":20,"font-weight":700,fill:"#fb7185","letter-spacing":3},noMark,["NO ESTIMATE · TYPE NOT SUPPORTED","KHÔNG ƯỚC LƯỢNG · LOẠI PIN CHƯA HỖ TRỢ"]);
   return function update(t,unk,badType,stopAt){
     var r=decide(Math.max(t,0.01),unk,badType);
     var mm=Math.floor(t), ss=Math.floor((t-mm)*60);
@@ -828,7 +824,7 @@ function paintVerdict(box,r){box.className=box.className.replace(/\b(report|wait
 var heroUpdate=makeRig(document.getElementById("heroRig"));
 var heroVerdict=document.getElementById("heroVerdict");
 var feedBox=document.getElementById("heroFeed");
-var FEED=[[0,"Session started · consent ✓","Phiên bắt đầu · đã đồng ý ✓"],[0.6,"Battery type check: lab-validated ✓","Kiểm tra loại pin: đã kiểm chứng trong lab ✓"],[5,"5 min of evidence · range still wide","5 phút bằng chứng · khoảng còn rộng"],[12,"Range tightening as data arrives","Khoảng thu hẹp khi dữ liệu đến"],[20,"Range fits the precision target","Khoảng đạt mục tiêu độ chính xác",1],[20,"Report issued · stopped at 20 min","Đã phát báo cáo · dừng ở phút 20",1]];
+var FEED=[[0,"Session started · consent ✓","Phiên bắt đầu · đã đồng ý ✓"],[0.6,"Battery type check: supported ✓","Kiểm tra loại pin: được hỗ trợ ✓"],[5,"5 min of evidence · range still wide","5 phút bằng chứng · khoảng còn rộng"],[12,"Range tightening as data arrives","Khoảng thu hẹp khi dữ liệu đến"],[20,"Range fits the precision target","Khoảng đạt mục tiêu độ chính xác",1],[20,"Report issued · stopped at 20 min","Đã phát báo cáo · dừng ở phút 20",1]];
 var feedEls=FEED.map(function(f){var d=document.createElement("div");d.className="e"+(f[3]?" hl":"");var mm=f[0]|0;d.innerHTML="<b>09:"+(mm<10?"0":"")+mm+"</b>";var sp=document.createElement("span");sp.setAttribute("data-en",f[1]);sp.setAttribute("data-vi",f[2]);sp.textContent=L(f[1],f[2]);d.appendChild(sp);feedBox.appendChild(d);return d;});
 var lastHeroK="";
 function heroFrame(ms,dur){
@@ -844,10 +840,10 @@ function heroFrame(ms,dur){
   var s=document.getElementById("pipe");
   var nodes=[
     [["Charging data","Dữ liệu sạc"],["Time, voltage, current","Thời gian, điện áp, dòng điện"],["from ordinary charging","từ những lần sạc thường"],"#7cb4ff"],
-    [["Evidence check","Kiểm tra bằng chứng"],["Validated battery type?","Loại pin đã kiểm chứng?"],["Enough minutes? Sensor trust?","Đủ phút? Cảm biến tin cậy?"],"#7cb4ff"],
+    [["Evidence check","Kiểm tra bằng chứng"],["Supported battery type?","Loại pin được hỗ trợ?"],["Enough minutes? Sensor trust?","Đủ phút? Cảm biến tin cậy?"],"#7cb4ff"],
     [["Estimate + range","Ước lượng + khoảng"],["Capacity with an honest","Dung lượng kèm một khoảng"],["uncertainty range","bất định trung thực"],"#5eead4"],
     [["Decision","Quyết định"],["Report · Keep observing","Báo cáo · Quan sát thêm"],["· Not assessable","· Không đánh giá được"],"#5eead4"],
-    [["Your answers","Câu trả lời"],["Health report: today","Báo cáo sức khỏe: hôm nay"],["Advice & value: next","Gợi ý & định giá: tiếp theo"],"#5eead4"]
+    [["Your answers","Câu trả lời"],["Health report and","Báo cáo sức khỏe và"],["AI charging coach","AI Coach gợi ý sạc"],"#5eead4"]
   ];
   var W=300,G=60,Y=40,H=250;
   nodes.forEach(function(n,i){
@@ -894,18 +890,19 @@ var slopeAnim=(function(){
 
 /* ---------- feasibility list + roadmap ---------- */
 var roadProg=(function(){
-  var items=[["Useful estimate after 5 minutes of a partial charge (lab)","Ước lượng hữu ích sau 5 phút sạc dở dang (lab)"],["Software only — no workshop, no special rig","Chỉ cần phần mềm — không xưởng, không thiết bị riêng"],["Lightweight: runs on an ordinary laptop, no GPU","Nhẹ: chạy trên laptop thường, không cần GPU"],["Working prototype service, tested end-to-end on localhost","Dịch vụ nguyên mẫu chạy được, đã kiểm thử đầu-cuối"],["Refuses unvalidated battery types instead of guessing","Từ chối loại pin chưa kiểm chứng thay vì đoán"],["Consent required; request data is not stored","Cần sự đồng ý; không lưu dữ liệu yêu cầu"]];
+  var items=[["Useful estimate after 5 minutes of a partial charge","Ước lượng hữu ích sau 5 phút sạc dở dang"],["Software only — no workshop, no special rig","Chỉ cần phần mềm — không xưởng, không thiết bị riêng"],["Lightweight: runs on an ordinary laptop, no GPU","Nhẹ: chạy trên laptop thường, không cần GPU"],["Working app + API with an AI charging coach — try it now","App + API chạy được, có AI Coach gợi ý sạc — dùng thử ngay"],["Refuses unsupported battery types instead of guessing","Từ chối loại pin chưa hỗ trợ thay vì đoán"],["Consent required; request data is not stored","Cần sự đồng ý; không lưu dữ liệu yêu cầu"]];
   var ul=document.getElementById("okl");
   items.forEach(function(t,i){var li=document.createElement("li");li.className="rv";li.style.setProperty("--d",(0.45+i*0.12)+"s");li.innerHTML='<svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="12" fill="rgba(94,234,212,.14)"/><path d="M7.5 13.5l3.5 3.5 7-8" fill="none" stroke="#5eead4" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';var sp=document.createElement("span");sp.setAttribute("data-en",t[0]);sp.setAttribute("data-vi",t[1]);sp.textContent=L(t[0],t[1]);li.appendChild(sp);ul.appendChild(li);});
   var s=document.getElementById("road");
   var st=[
-    [["Lab study","Nghiên cứu lab"],["3 public cell cohorts,","3 bộ cell công khai,"],["each cell held out","mỗi cell được loại ra kiểm tra"],["DONE","XONG"],"#5eead4"],
-    [["Prototype service","Bản mẫu dịch vụ"],["Local API with evidence","API cục bộ, kiểm tra"],["checks and refusals","bằng chứng và từ chối"],["DONE","XONG"],"#5eead4"],
-    [["Pilot","Thí điểm"],["One battery type, one data","Một loại pin, một cổng"],["connector, reference tests","dữ liệu, thử tham chiếu"],["NEXT","TIẾP THEO"],"#fbbf24"],
-    [["Driver app","Ứng dụng tài xế"],["Health check from","Kiểm tra sức khỏe từ"],["everyday charging","lần sạc hằng ngày"],["PLANNED","DỰ KIẾN"],"#7cb4ff"],
-    [["Coach & value","Gợi ý & định giá"],["Charging advice and a value","Gợi ý sạc và mô hình"],["model, each validated","định giá, đều kiểm chứng"],["PLANNED","DỰ KIẾN"],"#7cb4ff"],
-    [["Partners","Đối tác"],["Marketplaces, fleets,","Sàn xe, đội xe,"],["repurposers, passports","tái sử dụng, hộ chiếu pin"],["POTENTIAL","TIỀM NĂNG"],"#7cb4ff"]
+    [["Research & model","Nghiên cứu & mô hình"],["3 public cell cohorts,","3 bộ cell công khai,"],["each cell held out","mỗi cell được loại ra kiểm tra"],["DONE","XONG"],"#5eead4"],
+    [["App + API","App + API"],["Health check and","Kiểm tra pin và"],["AI charging coach","AI Coach gợi ý sạc"],["DONE","XONG"],"#5eead4"],
+    [["User testing","Người dùng thật"],["Real drivers using","Tài xế thật dùng"],["the app day to day","app hằng ngày"],["NOW","ĐANG LÀM"],"#fbbf24"],
+    [["Market partners","Đối tác thị trường"],["Collaborations for","Hợp tác để"],["product–market fit","khớp nhu cầu thị trường"],["NOW","ĐANG LÀM"],"#fbbf24"],
+    [["Battery value","Định giá pin"],["Evidence-backed value","Khoảng giá trị pin"],["range for resale","dựa trên bằng chứng"],["NEXT","TIẾP THEO"],"#7cb4ff"],
+    [["Scale","Mở rộng"],["More vehicles, fleets,","Thêm dòng xe, đội xe,"],["battery passports","hộ chiếu pin"],["NEXT","TIẾP THEO"],"#7cb4ff"]
   ];
+
   var n=st.length,W=1680,CW=250,gap=(W-CW*n)/(n-1),LY=150;
   el("line",{x1:CW/2,y1:LY,x2:W-CW/2,y2:LY,stroke:"rgba(255,255,255,.12)","stroke-width":4,"stroke-linecap":"round"},s);
   var prog=el("line",{x1:CW/2,y1:LY,x2:CW/2,y2:LY,stroke:"#5eead4","stroke-width":4,"stroke-linecap":"round"},s);
@@ -913,7 +910,7 @@ var roadProg=(function(){
     var cx=CW/2+i*(CW+gap),x=cx-CW/2,done=r[3][0]==="DONE";
     el("circle",{cx:cx,cy:LY,r:22,fill:done?"#5eead4":"#0b1220",stroke:r[4],"stroke-width":4},s);
     if(done)el("path",{d:"M"+(cx-9)+" "+LY+" l6 6 l12 -13",fill:"none",stroke:"#06221d","stroke-width":4,"stroke-linecap":"round"},s);
-    if(r[3][0]==="NEXT"){var pc=el("circle",{cx:cx,cy:LY,r:22,fill:"none",stroke:"#fbbf24","stroke-width":2},s);el("animate",{attributeName:"r",values:"22;38;22",dur:"2s",repeatCount:"indefinite"},pc);el("animate",{attributeName:"opacity",values:"1;0;1",dur:"2s",repeatCount:"indefinite"},pc);}
+    if(r[3][0]==="NOW"){var pc=el("circle",{cx:cx,cy:LY,r:22,fill:"none",stroke:"#fbbf24","stroke-width":2},s);el("animate",{attributeName:"r",values:"22;38;22",dur:"2s",repeatCount:"indefinite"},pc);el("animate",{attributeName:"opacity",values:"1;0;1",dur:"2s",repeatCount:"indefinite"},pc);}
     el("text",{x:cx,y:LY-50,"text-anchor":"middle","font-size":14,"font-weight":700,"letter-spacing":2,fill:r[4]},s,r[3]);
     el("rect",{"class":"card2",x:x,y:LY+50,width:CW,height:200,rx:24,fill:"rgba(255,255,255,.045)",stroke:"rgba(255,255,255,.1)"},s);
     el("text",{x:x+24,y:LY+100,"font-size":24,"font-weight":650,fill:"#e9eef8"},s,r[0]);
@@ -936,7 +933,7 @@ var SC=[
   {id:"s7",dur:8000,label:["The product","Sản phẩm"]},
   {id:"s8",dur:5600,label:["What changes","Điều thay đổi"]},
   {id:"s9",dur:5000,label:["How it works","Cách hoạt động"]},
-  {id:"s10",dur:7600,label:["Results — and the gaps","Kết quả — và khoảng trống"],frame:resultsFrame},
+  {id:"s10",dur:7600,label:["Results","Kết quả"],frame:resultsFrame},
   {id:"s11",dur:8000,label:["Business model","Mô hình kinh doanh"]},
   {id:"s12",dur:5800,label:["Feasibility","Tính khả thi"]},
   {id:"s13",dur:6000,label:["Roadmap","Lộ trình"],frame:roadFrame},
@@ -960,7 +957,7 @@ function resultsFrame(ms){
   hbars.forEach(function(b){b.style.transform="scaleX("+(parseFloat(b.dataset.w)/0.06*easeOut((ms-900)/1400))+")";});
   slopeAnim(easeOut((ms-700)/1800));
 }
-function roadFrame(ms){roadProg(easeOut((ms-600)/1500));}
+function roadFrame(ms){roadProg(easeOut((ms-600)/1500)*1);}
 
 var NAVMAP=[0,1,1,1,1,1,2,3,3,3,4,5,6,6,0];
 function paintLabel(){if(state.view==="try"){label.innerHTML="<b>✦</b>"+L("Try it — interactive","Thử ngay — tương tác");return;}var n=state.idx+1,lb=SC[state.idx].label;label.innerHTML="<b>"+(n<10?"0":"")+n+"</b>"+L(lb[0],lb[1]);}
@@ -1010,7 +1007,7 @@ function renderTry(){
   document.getElementById("tMin").textContent=tv.t+L(" min"," phút");
   [].slice.call(stepsBox.children).forEach(function(b){b.classList.toggle("on",+b.dataset.m===tv.t);});
   [["sensorSeg","sensor"],["typeSeg","type"]].forEach(function(p){[].slice.call(document.getElementById(p[0]).children).forEach(function(b){b.classList.toggle("on",b.dataset.v===tv[p[1]]);b.classList.toggle("bad",b.dataset.v==="unk");});});
-  document.getElementById("labHint").innerHTML='<span class="tag lab" style="font-size:11px;padding:4px 9px">'+L("Lab measured","Đo trong lab")+'</span>&nbsp; '+L("average error at "+tv.t+" min: ","sai số trung bình ở phút "+tv.t+": ")+'<b style="color:var(--ink)">'+num(LAB_MAE[tv.t],3)+' Ah</b> ('+L("23 cells","23 cell")+')';
+  document.getElementById("labHint").innerHTML='<span class="tag lab" style="font-size:11px;padding:4px 9px">'+L("Measured","Đo thực tế")+'</span>&nbsp; '+L("average error at "+tv.t+" min: ","sai số trung bình ở phút "+tv.t+": ")+'<b style="color:var(--ink)">'+num(LAB_MAE[tv.t],3)+' Ah</b> ('+L("23 cells","23 cell")+')';
 }
 
 /* ---------- input ---------- */

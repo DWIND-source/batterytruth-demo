@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BatteryTruth App — Sạc thông minh, pin bền lâu</title>
+<meta name="description" content="BatteryTruth: kiểm tra sức khỏe pin từ dữ liệu sạc và AI Coach gợi ý cách sạc bảo vệ pin.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='5' y='8' width='20' height='16' rx='4' fill='none' stroke='%235eead4' stroke-width='2.5'/%3E%3Crect x='26' y='13' width='3' height='6' rx='1' fill='%235eead4'/%3E%3Cpath d='M10 16l3 3 5-6' fill='none' stroke='%235eead4' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#070b14;--card:#0f1626;--card2:#131c30;--ink:#e9eef8;--muted:#93a0b8;--dim:#5f6b84;--line:rgba(255,255,255,.09);
+  --teal:#5eead4;--teal2:#2dd4bf;--blue:#7cb4ff;--amber:#fbbf24;--coral:#fb7185;--violet:#c4b5fd;
+  --font:"SF Pro Display","Segoe UI Variable Display","Segoe UI",Inter,system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;--r:22px}
+html[data-theme=light]{--bg:#eef2f8;--card:#ffffff;--card2:#f6f8fc;--ink:#0f172a;--muted:#475569;--dim:#64748b;--line:rgba(15,23,42,.1);
+  --teal:#0d9488;--teal2:#14b8a6;--blue:#2563eb;--amber:#b45309;--coral:#e11d48;--violet:#6d28d9}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased}
+body{min-height:100vh;background:radial-gradient(900px 500px at 10% -10%,rgba(45,212,191,.12),transparent 60%),radial-gradient(900px 600px at 110% 110%,rgba(124,180,255,.10),transparent 60%),var(--bg);background-attachment:fixed}
+button,input,select{font-family:inherit;color:inherit}
+a{color:var(--teal)}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+header{position:sticky;top:0;z-index:30;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:color-mix(in srgb,var(--bg) 78%,transparent);border-bottom:1px solid var(--line)}
+.hbar{display:flex;align-items:center;gap:16px;height:68px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:680;font-size:20px;text-decoration:none;color:var(--ink);white-space:nowrap}
+.brand em{font-style:normal;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);border:1px solid color-mix(in srgb,var(--teal) 40%,transparent);padding:3px 8px;border-radius:99px}
+.tabs{display:flex;gap:4px;margin-left:auto;background:var(--card2);border:1px solid var(--line);border-radius:99px;padding:4px}
+.tabs button{border:0;background:none;padding:9px 16px;border-radius:99px;font-size:14.5px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap}
+.tabs button.on{background:var(--teal);color:#04201b}
+html[data-theme=light] .tabs button.on{color:#fff}
+.hbtns{display:flex;gap:6px;align-items:center}
+.pill{border:1px solid var(--line);background:var(--card2);border-radius:99px;padding:8px 12px;font-size:13px;font-weight:650;cursor:pointer;display:inline-flex;align-items:center;gap:7px;color:var(--muted);text-decoration:none;white-space:nowrap}
+.pill b{color:var(--teal)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--dim);display:inline-block}
+.dot.on{background:var(--teal);box-shadow:0 0 0 3px color-mix(in srgb,var(--teal) 25%,transparent)}
+main{padding:28px 0 60px}
+.view{display:none}.view.on{display:block;animation:fade .4s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;line-height:1.1;letter-spacing:-.03em;margin:0;font-weight:700}
+.sub{color:var(--muted);font-size:17px;margin:10px 0 0;line-height:1.5;max-width:780px}
+.grad{background:linear-gradient(92deg,var(--teal),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;box-shadow:0 20px 50px -30px rgba(0,0,0,.5)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 18px}
+.chip{border:1px solid var(--line);background:var(--card2);border-radius:99px;padding:9px 14px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;gap:7px;align-items:center;transition:all .2s}
+.chip:hover{border-color:color-mix(in srgb,var(--teal) 50%,transparent)}
+.chip.on{background:color-mix(in srgb,var(--teal) 16%,transparent);border-color:var(--teal);color:var(--teal)}
+.grid{display:grid;grid-template-columns:400px 1fr;gap:20px;align-items:start}
+.f{margin-bottom:16px}
+.f label,.lbl{display:flex;justify-content:space-between;font-size:13px;font-weight:650;color:var(--muted);letter-spacing:.02em;margin-bottom:8px}
+.f label b{color:var(--ink);font-size:15px}
+input[type=range]{width:100%;accent-color:var(--teal);height:22px}
+.seg{display:flex;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:4px;gap:4px}
+.seg button{flex:1;border:0;background:none;padding:9px 6px;border-radius:10px;font-size:13.5px;font-weight:600;color:var(--muted);cursor:pointer}
+.seg button.on{background:color-mix(in srgb,var(--teal) 18%,transparent);color:var(--teal)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tog{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--card2);font-size:14px;cursor:pointer}
+.tog input{width:18px;height:18px;accent-color:var(--teal)}
+select,input[type=number],input[type=text],input[type=password],input[type=url]{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:14px}
+.result{display:flex;flex-direction:column;gap:16px}
+.reco{display:grid;grid-template-columns:150px 1fr;gap:22px;align-items:center}
+.ring{position:relative;width:150px;height:150px}
+.ring svg{width:150px;height:150px;transform:rotate(-90deg)}
+.ring .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.ring .c b{font-size:36px;letter-spacing:-.03em}
+.ring .c span{font-size:11.5px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.mood{font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.reco h2{font-size:28px;letter-spacing:-.02em;margin:6px 0 6px;line-height:1.15}
+.reco p{margin:0;color:var(--muted);font-size:15.5px;line-height:1.5}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opt{border:1px solid var(--line);border-radius:16px;padding:14px 16px;background:var(--card2);position:relative}
+.opt.best{border-color:var(--teal)}
+.opt .t{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;display:flex;justify-content:space-between}
+.opt .t i{font-style:normal;color:var(--teal)}
+.opt .v{font-size:22px;font-weight:700;margin-top:6px}
+.bar{height:8px;border-radius:6px;background:color-mix(in srgb,var(--ink) 10%,transparent);margin-top:8px;overflow:hidden}
+.bar b{display:block;height:100%;border-radius:6px;transition:width .5s}
+.factors{display:flex;gap:8px;flex-wrap:wrap}
+.factor{font-size:13px;padding:6px 10px;border-radius:99px;background:color-mix(in srgb,var(--amber) 12%,transparent);color:var(--amber);font-weight:600}
+.tips{list-style:none;margin:0;padding:0}
+.tips li{display:flex;gap:12px;padding:11px 0;border-top:1px solid var(--line);font-size:15px;line-height:1.45}
+.tips li:first-child{border-top:0}
+.tips li i{font-style:normal;flex:none;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:color-mix(in srgb,var(--teal) 14%,transparent);color:var(--teal);font-size:14px}
+.small{font-size:13px;color:var(--dim);line-height:1.45}
+.ai{border:1px solid color-mix(in srgb,var(--violet) 45%,transparent);background:linear-gradient(180deg,color-mix(in srgb,var(--violet) 10%,transparent),transparent)}
+.ai .hd{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.ai h3{margin:0;font-size:18px;display:flex;gap:8px;align-items:center}
+.btn{border:0;background:var(--teal);color:#04201b;font-weight:700;font-size:14.5px;padding:11px 18px;border-radius:12px;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+html[data-theme=light] .btn{color:#fff}
+.btn.ghost{background:none;border:1px solid var(--line);color:var(--ink)}
+.btn.violet{background:var(--violet);color:#1e1046}
+html[data-theme=light] .btn.violet{color:#fff}
+.btn:disabled{opacity:.5;cursor:default}
+.aiout h4{font-size:20px;margin:14px 0 8px}
+.aiout ol{margin:0 0 10px;padding-left:20px;line-height:1.55;font-size:15px}
+.aiout p{margin:6px 0;font-size:15px;line-height:1.5;color:var(--muted)}
+.warn{color:var(--amber)!important}
+.spin{width:16px;height:16px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:sp .8s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+/* health */
+.hgrid{display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start}
+.samples{display:flex;flex-direction:column;gap:10px}
+.sample{text-align:left;border:1px solid var(--line);background:var(--card2);border-radius:16px;padding:13px 15px;cursor:pointer;display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:center}
+.sample.on{border-color:var(--teal);background:color-mix(in srgb,var(--teal) 9%,transparent)}
+.sample .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-weight:800;background:color-mix(in srgb,var(--blue) 14%,transparent);color:var(--blue)}
+.sample b{display:block;font-size:15px}.sample span{font-size:13px;color:var(--muted)}
+.drop{border:1.5px dashed var(--line);border-radius:16px;padding:16px;text-align:center;font-size:14px;color:var(--muted);cursor:pointer}
+.drop:hover{border-color:var(--teal)}
+.chart{width:100%;height:auto;display:block}
+.prog{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--muted);margin-top:4px}
+.log{font-size:14px;margin:0;padding:0;list-style:none}
+.log li{display:grid;grid-template-columns:70px 1fr auto;gap:10px;padding:8px 0;border-top:1px solid var(--line);align-items:center}
+.log li:first-child{border-top:0}
+.log b{color:var(--teal);font-variant-numeric:tabular-nums}
+.badge{font-size:12px;font-weight:700;padding:4px 9px;border-radius:99px;white-space:nowrap}
+.badge.ok{background:color-mix(in srgb,var(--teal) 16%,transparent);color:var(--teal)}
+.badge.no{background:color-mix(in srgb,var(--amber) 16%,transparent);color:var(--amber)}
+.verdict{border-radius:var(--r);padding:20px 22px;border:1px solid var(--line)}
+.verdict.report{border-color:var(--teal);background:color-mix(in srgb,var(--teal) 9%,transparent)}
+.verdict.no{border-color:var(--coral);background:color-mix(in srgb,var(--coral) 8%,transparent)}
+.verdict .k{font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.verdict h2{margin:6px 0;font-size:30px;letter-spacing:-.02em}
+.verdict.report h2{color:var(--teal)}.verdict.no h2{color:var(--coral)}
+.verdict p{margin:4px 0;color:var(--muted);line-height:1.5}
+.range{position:relative;height:56px;margin:14px 0 4px}
+.range .ax{position:absolute;left:0;right:0;top:26px;height:2px;background:var(--line)}
+.range .band{position:absolute;top:14px;height:26px;border-radius:9px;background:color-mix(in srgb,var(--teal) 28%,transparent);border:2px solid var(--teal);transition:all .6s}
+.range .pt{position:absolute;top:21px;width:12px;height:12px;border-radius:50%;background:var(--ink);transform:translateX(-50%)}
+.range .tr{position:absolute;top:6px;bottom:6px;width:2px;background:var(--amber);transform:translateX(-50%)}
+.range .tk{position:absolute;top:44px;font-size:11.5px;color:var(--dim);transform:translateX(-50%)}
+.engine{font-size:12.5px;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 6px;border-top:1px solid var(--line)}
+th{color:var(--muted);font-weight:600;font-size:12.5px;letter-spacing:.04em}
+details summary{cursor:pointer;color:var(--muted);font-size:14px}
+/* chat */
+.chatbox{display:flex;flex-direction:column;height:min(70vh,680px)}
+.msgs{flex:1;overflow:auto;display:flex;flex-direction:column;gap:12px;padding:6px 2px 12px}
+.m{max-width:78%;padding:12px 15px;border-radius:18px;font-size:15px;line-height:1.5;white-space:pre-wrap}
+.m.u{align-self:flex-end;background:var(--teal);color:#04201b;border-bottom-right-radius:6px}
+html[data-theme=light] .m.u{color:#fff}
+.m.a{align-self:flex-start;background:var(--card2);border:1px solid var(--line);border-bottom-left-radius:6px}
+.m.e{align-self:center;color:var(--amber);font-size:14px;background:none}
+.ask{display:flex;gap:10px;padding-top:10px;border-top:1px solid var(--line)}
+.ask input{flex:1}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(3,6,12,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal.on{display:flex}
+.modal .card{max-width:520px;width:100%}
+.modal h3{margin:0 0 6px;font-size:22px}
+.radio{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:14px;margin-top:10px;cursor:pointer}
+.radio input{margin-top:4px;accent-color:var(--teal)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--card);border:1px solid var(--line);padding:12px 18px;border-radius:14px;font-size:14px;z-index:60;display:none;box-shadow:0 20px 40px -20px rgba(0,0,0,.6)}
+@media (max-width:980px){.grid,.hgrid{grid-template-columns:1fr}.tabs{order:3;width:100%;margin:0 0 10px;overflow:auto}.hbar{flex-wrap:wrap;height:auto;padding-top:10px}.reco{grid-template-columns:1fr;justify-items:start}h1{font-size:30px}.cmp{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap hbar">
+  <a class="brand" href="../index.html" title="BatteryTruth">
+    <svg width="30" height="30" viewBox="0 0 40 40"><rect x="5" y="10" width="26" height="20" rx="6" fill="none" stroke="currentColor" stroke-width="2.6" style="color:var(--teal)"/><rect x="32" y="16" width="4" height="8" rx="1.5" style="fill:var(--teal)"/><path d="M12 20.5l4 4 7-8" fill="none" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--teal)"/></svg>
+    BatteryTruth <em>App</em>
+  </a>
+  <nav class="tabs" id="tabs">
+    <button data-v="coach" class="on" data-i="tab_coach"></button>
+    <button data-v="health" data-i="tab_health"></button>
+    <button data-v="chat" data-i="tab_chat"></button>
+  </nav>
+  <div class="hbtns">
+    <a class="pill" href="../index.html" data-i="back"></a>
+    <button class="pill" id="langBtn"></button>
+    <button class="pill" id="themeBtn" title="Light / dark">☾</button>
+    <button class="pill" id="aiBtn"><span class="dot" id="aiDot"></span><span data-i="ai_btn"></span></button>
+  </div>
+</div></header>
+
+<main class="wrap">
+
+<!-- COACH -->
+<section class="view on" id="v-coach">
+  <h1 data-i="coach_h"></h1>
+  <p class="sub" data-i="coach_sub"></p>
+  <div class="chips" id="scen"></div>
+  <div class="grid">
+    <div class="card" id="form">
+      <div class="f"><label><span data-i="f_temp"></span><b id="o_ambientC"></b></label><input type="range" id="ambientC" min="-15" max="45" step="1"></div>
+      <div class="f"><label><span data-i="f_soc"></span><b id="o_soc"></b></label><input type="range" id="soc" min="0" max="100" step="1"></div>
+      <div class="f"><label><span data-i="f_hours"></span><b id="o_hours"></b></label><input type="range" id="hours" min="0.25" max="24" step="0.25"></div>
+      <div class="f"><label><span data-i="f_trip"></span><b id="o_tripKm"></b></label><input type="range" id="tripKm" min="0" max="600" step="5"></div>
+      <div class="row2 f">
+        <div><div class="lbl" data-i="f_range"></div><input type="number" id="rangeKm" min="50" max="1000" step="10"></div>
+        <div><div class="lbl" data-i="f_pack"></div><input type="number" id="packKWh" min="10" max="150" step="1"></div>
+      </div>
+      <div class="f"><div class="lbl" data-i="f_chem"></div><div class="seg" id="chem"><button data-v="lfp">LFP</button><button data-v="nmc">NMC / NCA</button><button data-v="unknown" data-i="unknown"></button></div></div>
+      <div class="f"><div class="lbl" data-i="f_parked"></div><div class="seg" id="parked"><button data-v="shade" data-i="p_shade"></button><button data-v="sun" data-i="p_sun"></button><button data-v="garage" data-i="p_garage"></button></div></div>
+      <div class="row2 f">
+        <label class="tog"><span data-i="f_ac"></span><input type="checkbox" id="hasAC"></label>
+        <select id="acKW"><option value="3.7">3.7 kW</option><option value="7">7 kW</option><option value="11">11 kW</option><option value="22">22 kW</option></select>
+        <label class="tog"><span data-i="f_dc"></span><input type="checkbox" id="hasDC"></label>
+        <select id="dcKW"><option value="50">50 kW</option><option value="60">60 kW</option><option value="100">100 kW</option><option value="150">150 kW</option><option value="250">250 kW</option></select>
+      </div>
+      <div class="row2 f">
+        <label class="tog"><span data-i="f_hot"></span><input type="checkbox" id="hotDrive"></label>
+        <label class="tog"><span data-i="f_pre"></span><input type="checkbox" id="precondition"></label>
+      </div>
+      <div class="f" style="margin-bottom:0"><label><span data-i="f_store"></span><b id="o_storageDays"></b></label><input type="range" id="storageDays" min="0" max="60" step="1"></div>
+    </div>
+
+    <div class="result">
+      <div class="card">
+        <div class="reco">
+          <div class="ring"><svg viewBox="0 0 150 150"><circle cx="75" cy="75" r="62" fill="none" stroke="currentColor" stroke-width="12" style="color:color-mix(in srgb,var(--ink) 9%,transparent)"/><circle id="ringArc" cx="75" cy="75" r="62" fill="none" stroke-width="12" stroke-linecap="round" stroke-dasharray="389.6" stroke-dashoffset="389.6" style="transition:stroke-dashoffset .6s,stroke .4s"/></svg>
+            <div class="c"><b id="stressN">0</b><span data-i="stress_lbl"></span></div></div>
+          <div>
+            <div class="mood" id="mood"></div>
+            <h2 id="recoTitle"></h2>
+            <p id="recoSub"></p>
+          </div>
+        </div>
+      </div>
+      <div class="cmp" id="cmp"></div>
+      <div class="card" id="factorsCard"><div class="lbl" data-i="factors"></div><div class="factors" id="factors"></div></div>
+      <div class="card"><div class="lbl" data-i="tips"></div><ul class="tips" id="tips"></ul><div class="small" data-i="manual" style="margin-top:8px"></div></div>
+      <div class="card ai">
+        <div class="hd"><h3>✦ <span data-i="ai_title"></span></h3><button class="btn violet" id="adviseBtn"></button></div>
+        <div class="aiout" id="aiOut"><p class="small" data-i="ai_hint"></p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HEALTH -->
+<section class="view" id="v-health">
+  <h1 data-i="health_h"></h1>
+  <p class="sub" data-i="health_sub"></p>
+  <div class="hgrid" style="margin-top:22px">
+    <div class="card">
+      <div class="lbl" data-i="pick"></div>
+      <div class="samples" id="samples"></div>
+      <div style="height:12px"></div>
+      <label class="drop" id="drop"><input type="file" id="file" accept=".csv,.txt,.tsv" hidden><span data-i="upload"></span></label>
+      <div class="small" style="margin-top:8px"><span data-i="csv_fmt"></span> <a href="#" id="tmpl" data-i="csv_tmpl"></a></div>
+      <div style="height:14px"></div>
+      <button class="btn" id="runBtn" style="width:100%;justify-content:center"></button>
+    </div>
+    <div class="result">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div class="lbl" style="margin:0" data-i="evidence"></div><span class="engine" id="engineBadge"></span></div>
+        <svg class="chart" id="chart" viewBox="0 0 720 260"></svg>
+        <div class="prog"><span id="clock">0:00</span><span id="progTxt"></span></div>
+      </div>
+      <div class="verdict" id="verdict"><div class="k" data-i="verdict"></div><h2 id="vTitle">—</h2><p id="vText" data-i="v_idle"></p><div class="range" id="range" style="display:none"></div><p id="vTruth"></p></div>
+      <div class="card"><div class="lbl" data-i="checkpoints"></div><ul class="log" id="log"></ul>
+        <details style="margin-top:10px"><summary data-i="details"></summary><table id="tbl"></table></details></div>
+    </div>
+  </div>
+</section>
+
+<!-- CHAT -->
+<section class="view" id="v-chat">
+  <h1 data-i="chat_h"></h1>
+  <p class="sub" data-i="chat_sub"></p>
+  <div class="card chatbox" style="margin-top:22px">
+    <div class="msgs" id="msgs"></div>
+    <div class="chips" id="sugg" style="margin:6px 0 10px"></div>
+    <form class="ask" id="askForm"><input type="text" id="askIn" autocomplete="off"><button class="btn" id="askBtn" type="submit"></button></form>
+  </div>
+</section>
+
+</main>
+
+<div class="modal" id="modal"><div class="card">
+  <h3 data-i="set_h"></h3>
+  <p class="small" data-i="set_sub"></p>
+  <label class="radio"><input type="radio" name="aimode" value="server"><div><b data-i="m_server"></b><div class="small" id="srvStatus"></div><input type="url" id="apiBase" style="margin-top:8px" placeholder="https://… (để trống = cùng máy chủ)"></div></label>
+  <label class="radio"><input type="radio" name="aimode" value="byok"><div style="flex:1"><b data-i="m_byok"></b><div class="small" data-i="byok_note"></div><input type="password" id="apiKey" style="margin-top:8px" placeholder="sk-ant-…"><label class="small" style="display:flex;gap:6px;margin-top:8px"><input type="checkbox" id="remember"> <span data-i="remember"></span></label></div></label>
+  <label class="radio"><input type="radio" name="aimode" value="off"><div><b data-i="m_off"></b><div class="small" data-i="off_note"></div></div></label>
+  <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px"><button class="btn ghost" id="setCancel" data-i="cancel"></button><button class="btn" id="setSave" data-i="save"></button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script type="module" src="main.js"></script>
+</body>
+</html>
