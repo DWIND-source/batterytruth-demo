@@ -1,5 +1,5 @@
 import { coach, SCENARIOS, DEFAULT_SCENARIO, runSession, parseLog } from "./engine.js";
-import { advise, chat, AIError } from "./ai.js";
+import { advise, chat, listModels, AIError, PROVIDERS } from "./ai.js";
 
 /* ---------------- i18n ---------------- */
 const T = {
@@ -59,10 +59,13 @@ const T = {
     q1: "Sạc nhanh mỗi ngày có hại pin không?", q2: "Trời 38°C có nên sạc đầy 100%?", q3: "Pin còn bao nhiêu % thì nên sạc?", q4: "Để xe ngoài nắng cả ngày có sao không?",
     hello: "Xin chào! Tôi là BatteryTruth Coach. Hỏi tôi bất cứ điều gì về sạc và giữ pin bền lâu.",
     set_h: "Kết nối AI Coach", set_sub: "Chọn cách AI hoạt động. Không có AI, app vẫn đưa khuyến nghị bằng bộ quy tắc chăm sóc pin.",
-    m_server: "Máy chủ BatteryTruth", m_byok: "API key Anthropic của tôi", byok_note: "Key chỉ lưu trên thiết bị này và chỉ gửi tới api.anthropic.com.", remember: "Ghi nhớ trên thiết bị này",
+    m_server: "Máy chủ BatteryTruth", m_byok: "API key của tôi (Claude, OpenAI, Gemini…)", byok_note: "Key chỉ lưu trên thiết bị này và chỉ gửi tới nhà cung cấp bạn chọn.",
+    prov: "Nhà cung cấp AI", key: "API key", get_key: "Lấy key ↗", load_models: "Tải danh sách model", base_url: "Địa chỉ API (tương thích OpenAI)", key_optional: "Không bắt buộc", models_found: "Tìm thấy {n} model",
+    note_compat: "Dùng chuẩn OpenAI Chat Completions.", note_ollama: "Chạy Ollama trên máy và cho phép trình duyệt gọi: đặt OLLAMA_ORIGINS=* rồi khởi động lại Ollama.", note_custom: "Nhập địa chỉ kết thúc bằng /v1 của bất kỳ dịch vụ tương thích OpenAI nào (LM Studio, vLLM, Together, Fireworks, Azure…).",
+    e_model: "Không tìm thấy model — bấm “Tải danh sách model” để chọn đúng tên.", e_config: "Thiếu cấu hình AI: {m}", remember: "Ghi nhớ trên thiết bị này",
     m_off: "Tắt AI", off_note: "Chỉ dùng bộ quy tắc chăm sóc pin (không gửi dữ liệu đi đâu).", cancel: "Hủy", save: "Lưu",
     srv_ok: "Đã kết nối · AI {ai}", srv_ai_on: "sẵn sàng", srv_ai_off: "chưa cấu hình key", srv_none: "Không tìm thấy máy chủ — nhập địa chỉ API nếu có.",
-    e_auth: "API key không hợp lệ.", e_rate: "AI đang bận, thử lại sau ít phút.", e_network: "Không kết nối được AI.", e_refusal: "AI không trả lời yêu cầu này.", e_other: "AI gặp lỗi: {m}", e_nokey: "Hãy kết nối AI trước (nút AI ở góc trên).",
+    e_auth: "API key không hợp lệ.", e_rate: "AI đang bận, thử lại sau ít phút.", e_network: "Không kết nối được AI. Nếu nhà cung cấp chặn gọi từ trình duyệt, hãy dùng OpenRouter hoặc máy chủ BatteryTruth.", e_refusal: "AI không trả lời yêu cầu này.", e_other: "AI gặp lỗi: {m}", e_nokey: "Hãy kết nối AI trước (nút AI ở góc trên).",
     a_steps: "Các bước", a_why: "Vì sao",
     h: "giờ", hm: "{h} giờ {m} phút", mins: "{m} phút",
   },
@@ -122,10 +125,13 @@ const T = {
     q1: "Is fast charging every day bad for the battery?", q2: "It's 38°C — should I charge to 100%?", q3: "At what % should I charge?", q4: "Is parking in the sun all day a problem?",
     hello: "Hi! I'm the BatteryTruth Coach. Ask me anything about charging and keeping your battery healthy.",
     set_h: "Connect the AI Coach", set_sub: "Choose how the AI runs. Without AI, the app still recommends using its battery-care rules.",
-    m_server: "BatteryTruth server", m_byok: "My Anthropic API key", byok_note: "The key stays on this device and is sent only to api.anthropic.com.", remember: "Remember on this device",
+    m_server: "BatteryTruth server", m_byok: "My own API key (Claude, OpenAI, Gemini…)", byok_note: "The key stays on this device and is sent only to the provider you choose.",
+    prov: "AI provider", key: "API key", get_key: "Get a key ↗", load_models: "Load model list", base_url: "API address (OpenAI-compatible)", key_optional: "Optional", models_found: "{n} models found",
+    note_compat: "Uses the OpenAI Chat Completions standard.", note_ollama: "Run Ollama locally and allow browser access: set OLLAMA_ORIGINS=* and restart Ollama.", note_custom: "Enter the /v1 address of any OpenAI-compatible service (LM Studio, vLLM, Together, Fireworks, Azure…).",
+    e_model: "Model not found — use “Load model list” to pick the exact name.", e_config: "AI settings incomplete: {m}", remember: "Remember on this device",
     m_off: "AI off", off_note: "Battery-care rules only (nothing is sent anywhere).", cancel: "Cancel", save: "Save",
     srv_ok: "Connected · AI {ai}", srv_ai_on: "ready", srv_ai_off: "no key configured", srv_none: "No server found — enter an API address if you have one.",
-    e_auth: "Invalid API key.", e_rate: "The AI is busy, try again in a minute.", e_network: "Can't reach the AI.", e_refusal: "The AI declined this request.", e_other: "AI error: {m}", e_nokey: "Connect the AI first (AI button, top right).",
+    e_auth: "Invalid API key.", e_rate: "The AI is busy, try again in a minute.", e_network: "Can't reach the AI. If the provider blocks browser calls, use OpenRouter or the BatteryTruth server.", e_refusal: "The AI declined this request.", e_other: "AI error: {m}", e_nokey: "Connect the AI first (AI button, top right).",
     a_steps: "Steps", a_why: "Why",
     h: "h", hm: "{h} h {m} min", mins: "{m} min",
   },
@@ -162,50 +168,89 @@ function show(v) {
 document.querySelectorAll("#tabs button").forEach(b => (b.onclick = () => show(b.dataset.v)));
 
 /* ---------------- AI connection ---------------- */
-const AI = { mode: pref("aimode", ""), apiBase: pref("apibase", ""), key: "", server: null };
-try { AI.key = localStorage.getItem("bt_apikey") || sessionStorage.getItem("bt_apikey") || ""; } catch {}
+const AI = { mode: pref("aimode", ""), apiBase: pref("apibase", ""), provider: pref("ai_provider", "anthropic"), model: "", baseURL: "", key: "", server: null };
+if (!PROVIDERS[AI.provider]) AI.provider = "anthropic";
+const store = () => (pref("apikey_remember", "") ? localStorage : sessionStorage);
+function loadProviderCfg(p) {
+  let key = "";
+  try { key = localStorage.getItem("bt_key_" + p) || sessionStorage.getItem("bt_key_" + p) || (p === "anthropic" ? localStorage.getItem("bt_apikey") || sessionStorage.getItem("bt_apikey") || "" : ""); } catch {}
+  return { key, model: pref("ai_model_" + p, PROVIDERS[p].model), baseURL: pref("ai_base_" + p, PROVIDERS[p].base) };
+}
+Object.assign(AI, loadProviderCfg(AI.provider));
 async function probeServer() {
   // a static host (e.g. GitHub Pages) has no API unless an address is configured
-  if (!AI.apiBase && location.hostname.endsWith("github.io")) { AI.server = null; if (!AI.mode) AI.mode = AI.key ? "byok" : "off"; renderAiState(); renderHealth(); return; }
+  if (!AI.apiBase && location.hostname.endsWith("github.io")) { AI.server = null; if (!AI.mode) AI.mode = byokReady() ? "byok" : "off"; renderAiState(); renderHealth(); return; }
   try {
     const ctl = new AbortController(); setTimeout(() => ctl.abort(), 2000);
     const r = await fetch((AI.apiBase || "") + "/api/status", { signal: ctl.signal });
     AI.server = r.ok ? await r.json() : null;
     if (AI.server && !AI.server.service?.startsWith("batterytruth")) AI.server = null;
   } catch { AI.server = null; }
-  if (!AI.mode) AI.mode = AI.server?.ai_available ? "server" : AI.key ? "byok" : "off";
+  if (!AI.mode) AI.mode = AI.server?.ai_available ? "server" : byokReady() ? "byok" : "off";
   renderAiState(); renderHealth();
 }
-function aiReady() { return (AI.mode === "server" && AI.server?.ai_available) || (AI.mode === "byok" && AI.key); }
+function byokReady() { return !!(AI.key || (PROVIDERS[AI.provider].keyless && AI.baseURL && AI.model)); }
+function aiReady() { return (AI.mode === "server" && AI.server?.ai_available) || (AI.mode === "byok" && byokReady()); }
 function renderAiState() {
   $("#aiDot").classList.toggle("on", !!aiReady());
   const b = $("#adviseBtn"); b.textContent = aiReady() ? "✦ " + t("ai_go") : t("ai_need");
+  $("#aiBtn").title = aiReady() ? (AI.mode === "server" ? "BatteryTruth API" : PROVIDERS[AI.provider].name + " · " + AI.model) : "AI";
+}
+function fillProviderFields(p, cfg) {
+  const P = PROVIDERS[p];
+  $("#apiKey").value = cfg.key; $("#aiModel").value = cfg.model; $("#baseURL").value = cfg.baseURL;
+  $("#apiKey").placeholder = P.keyless ? t("key_optional") : p === "anthropic" ? "sk-ant-…" : "…";
+  $("#baseRow").style.display = P.editableBase ? "" : "none";
+  $("#keyLink").style.display = P.keyUrl ? "" : "none"; $("#keyLink").href = P.keyUrl || "#";
+  $("#provNote").textContent = p === "ollama" ? t("note_ollama") : p === "custom" ? t("note_custom") : p === "anthropic" ? "" : t("note_compat");
+  $("#modelList").innerHTML = "";
 }
 function openSettings() {
   document.querySelectorAll("input[name=aimode]").forEach(r => (r.checked = r.value === (AI.mode || "off")));
-  $("#apiBase").value = AI.apiBase; $("#apiKey").value = AI.key; $("#remember").checked = !!pref("apikey_remember", "");
-  $("#srvStatus").textContent = AI.server ? t("srv_ok", { ai: AI.server.ai_available ? t("srv_ai_on") : t("srv_ai_off") }) : t("srv_none");
+  $("#apiBase").value = AI.apiBase; $("#remember").checked = !!pref("apikey_remember", "");
+  $("#provider").innerHTML = Object.entries(PROVIDERS).map(([k, v]) => `<option value="${k}">${v.name}</option>`).join("");
+  $("#provider").value = AI.provider; fillProviderFields(AI.provider, AI);
+  $("#srvStatus").textContent = AI.server ? t("srv_ok", { ai: AI.server.ai_available ? t("srv_ai_on") + " · " + (AI.server.ai_model || "") : t("srv_ai_off") }) : t("srv_none");
   $("#modal").classList.add("on");
 }
+$("#provider").onchange = e => { $("#byokRadio").checked = true; fillProviderFields(e.target.value, loadProviderCfg(e.target.value)); };
+$("#byokBox").addEventListener("click", e => { if (e.target.closest("a")) return; $("#byokRadio").checked = true; });
+$("#loadModels").onclick = async e => {
+  e.preventDefault(); const link = e.currentTarget; const old = link.textContent; link.textContent = "…";
+  try {
+    const p = $("#provider").value;
+    const ids = await listModels({ provider: p, apiKey: $("#apiKey").value.trim(), baseURL: $("#baseURL").value.trim() || PROVIDERS[p].base });
+    $("#modelList").innerHTML = ids.map(id => `<option value="${id}">`).join("");
+    toast(t("models_found", { n: ids.length })); $("#aiModel").focus();
+  } catch (err) { toast(aiErr(err)); }
+  link.textContent = old;
+};
 $("#aiBtn").onclick = openSettings;
 $("#setCancel").onclick = () => $("#modal").classList.remove("on");
 $("#setSave").onclick = async () => {
   AI.mode = document.querySelector("input[name=aimode]:checked")?.value || "off";
   AI.apiBase = $("#apiBase").value.trim().replace(/\/+$/, ""); savePref("aimode", AI.mode); savePref("apibase", AI.apiBase);
+  const p = $("#provider").value || AI.provider;
+  AI.provider = p; savePref("ai_provider", p);
   AI.key = $("#apiKey").value.trim();
+  AI.model = $("#aiModel").value.trim() || PROVIDERS[p].model; savePref("ai_model_" + p, AI.model);
+  AI.baseURL = PROVIDERS[p].editableBase ? $("#baseURL").value.trim().replace(/\/+$/, "") : PROVIDERS[p].base; savePref("ai_base_" + p, AI.baseURL);
   try {
-    localStorage.removeItem("bt_apikey"); sessionStorage.removeItem("bt_apikey");
-    if (AI.key) ($("#remember").checked ? localStorage : sessionStorage).setItem("bt_apikey", AI.key);
     savePref("apikey_remember", $("#remember").checked ? "1" : "");
+    localStorage.removeItem("bt_key_" + p); sessionStorage.removeItem("bt_key_" + p); localStorage.removeItem("bt_apikey"); sessionStorage.removeItem("bt_apikey");
+    if (AI.key) store().setItem("bt_key_" + p, AI.key);
   } catch {}
   $("#modal").classList.remove("on");
   await probeServer();
 };
 function aiErr(e) {
-  if (e instanceof AIError) return e.code === "auth" ? t("e_auth") : e.code === "rate" ? t("e_rate") : e.code === "network" ? t("e_network") : e.code === "refusal" ? t("e_refusal") : t("e_other", { m: e.message });
+  if (e instanceof AIError) {
+    const m = { auth: "e_auth", rate: "e_rate", network: "e_network", refusal: "e_refusal", model: "e_model", config: "e_config" }[e.code];
+    return m ? t(m, { m: e.message }) : t("e_other", { m: e.message });
+  }
   return t("e_other", { m: e.message || String(e) });
 }
-const aiCall = () => ({ mode: AI.mode, apiKey: AI.key, apiBase: AI.apiBase });
+const aiCall = () => ({ mode: AI.mode, provider: AI.provider, apiKey: AI.key, model: AI.model, baseURL: AI.baseURL, apiBase: AI.apiBase });
 
 /* ---------------- coach ---------------- */
 let S = { ...DEFAULT_SCENARIO }, activeScenario = "", lastPlan = null, lastHealth = null;

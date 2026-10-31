@@ -143,7 +143,7 @@ html[data-theme=light] .m.u{color:#fff}
 /* modal */
 .modal{position:fixed;inset:0;background:rgba(3,6,12,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
 .modal.on{display:flex}
-.modal .card{max-width:520px;width:100%}
+.modal .card{max-width:540px;width:100%;max-height:92vh;overflow:auto}
 .modal h3{margin:0 0 6px;font-size:22px}
 .radio{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:14px;margin-top:10px;cursor:pointer}
 .radio input{margin-top:4px;accent-color:var(--teal)}
@@ -269,7 +269,13 @@ html[data-theme=light] .m.u{color:#fff}
   <h3 data-i="set_h"></h3>
   <p class="small" data-i="set_sub"></p>
   <label class="radio"><input type="radio" name="aimode" value="server"><div><b data-i="m_server"></b><div class="small" id="srvStatus"></div><input type="url" id="apiBase" style="margin-top:8px" placeholder="https://… (để trống = cùng máy chủ)"></div></label>
-  <label class="radio"><input type="radio" name="aimode" value="byok"><div style="flex:1"><b data-i="m_byok"></b><div class="small" data-i="byok_note"></div><input type="password" id="apiKey" style="margin-top:8px" placeholder="sk-ant-…"><label class="small" style="display:flex;gap:6px;margin-top:8px"><input type="checkbox" id="remember"> <span data-i="remember"></span></label></div></label>
+  <div class="radio" id="byokBox"><input type="radio" name="aimode" value="byok" id="byokRadio"><div style="flex:1;min-width:0"><b data-i="m_byok"></b><div class="small" data-i="byok_note"></div>
+    <div class="lbl" style="margin:12px 0 6px" data-i="prov"></div><select id="provider"></select>
+    <div class="lbl" style="margin:12px 0 6px"><span data-i="key"></span><a id="keyLink" target="_blank" rel="noopener" data-i="get_key"></a></div><input type="password" id="apiKey" autocomplete="off">
+    <div class="lbl" style="margin:12px 0 6px"><span>Model</span><a href="#" id="loadModels" data-i="load_models"></a></div><input type="text" id="aiModel" list="modelList" autocomplete="off"><datalist id="modelList"></datalist>
+    <div id="baseRow"><div class="lbl" style="margin:12px 0 6px" data-i="base_url"></div><input type="url" id="baseURL" placeholder="https://…/v1"></div>
+    <div class="small" id="provNote" style="margin-top:8px"></div>
+    <label class="small" style="display:flex;gap:6px;margin-top:10px"><input type="checkbox" id="remember"> <span data-i="remember"></span></label></div></div>
   <label class="radio"><input type="radio" name="aimode" value="off"><div><b data-i="m_off"></b><div class="small" data-i="off_note"></div></div></label>
   <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px"><button class="btn ghost" id="setCancel" data-i="cancel"></button><button class="btn" id="setSave" data-i="save"></button></div>
 </div></div>

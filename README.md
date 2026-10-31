@@ -14,7 +14,7 @@ The pitch's **▶ Live app** button opens the app.
 
 ## The app
 
-- **Smart charging** — enter the temperature, current charge, departure time, trip and chargers (or tap a scenario such as *36°C, leaving in 1 hour*). BatteryTruth picks AC or DC, the target %, when to start, and shows a battery-stress score with what drives it. **AI Coach** (Claude, `claude-opus-5-5`) turns the plan into personal advice.
+- **Smart charging** — enter the temperature, current charge, departure time, trip and chargers (or tap a scenario such as *36°C, leaving in 1 hour*). BatteryTruth picks AC or DC, the target %, when to start, and shows a battery-stress score with what drives it. **AI Coach** (Claude or any provider you connect) turns the plan into personal advice.
 - **Battery check** — choose a charging session or upload a log (`elapsed_s, voltage_V, current_A`, one row per second or faster). The model estimates capacity checkpoint by checkpoint (5, 10, 15, 20, 30, 40 min) and reports only when the range is within ±0.5 Ah and the data match what it has learned. It runs entirely in the browser; the result is identical to the Python model.
 - **Ask AI** — follow-up chat that knows your scenario and latest battery check.
 
@@ -22,15 +22,26 @@ The pitch's **▶ Live app** button opens the app.
 
 Open the **AI** button in the app:
 
-- **BatteryTruth server** — run `api/server.py` with `ANTHROPIC_API_KEY` set; the key never reaches the browser.
-- **My Anthropic API key** — for the static site (GitHub Pages). The key stays on the device and is sent only to `api.anthropic.com`.
+- **My own API key** — pick a provider and paste your key: Anthropic Claude (`claude-opus-5-5`), OpenAI, Google Gemini, OpenRouter (one key for hundreds of models), Groq, DeepSeek, Mistral, Ollama on your own computer, or any **OpenAI-compatible** address (LM Studio, vLLM, Together, Fireworks, Azure…). **Load model list** fetches the models your key can use. The key stays on the device and is sent only to that provider. If a provider blocks calls from browsers, use OpenRouter or the server below.
+- **BatteryTruth server** — run `api/server.py`; the key stays on the server.
 - **AI off** — the rule-based plan still works and nothing is sent anywhere.
+
+Server configuration (environment variables):
+
+```powershell
+# Claude
+$env:ANTHROPIC_API_KEY = "sk-ant-..."
+# or any OpenAI-compatible provider
+$env:BT_AI_BASE_URL = "https://api.openai.com/v1"   # e.g. https://generativelanguage.googleapis.com/v1beta/openai, https://openrouter.ai/api/v1, http://localhost:11434/v1
+$env:BT_AI_MODEL    = "gpt-5.4-mini"
+$env:BT_AI_KEY      = "sk-..."
+```
 
 ## Run locally
 
 ```bat
 start_demo.bat            :: static site on http://localhost:8080 (pitch + app, AI via your own key)
-api\start_api.bat         :: full stack on http://127.0.0.1:8787/app/ (set ANTHROPIC_API_KEY first)
+api\start_api.bat         :: full stack on http://127.0.0.1:8787/app/ (set the AI variables above first)
 ```
 
 The app uses ES modules and `fetch`, so open it through one of these servers rather than by double-clicking the file.

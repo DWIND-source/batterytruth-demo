@@ -5,12 +5,33 @@
   "advice_schema": {
     "type": "object",
     "properties": {
-      "headline": { "type": "string", "description": "One short recommendation, at most 12 words." },
-      "actions": { "type": "array", "items": { "type": "string" }, "description": "2 to 4 concrete steps, each at most 18 words, in order." },
-      "why": { "type": "string", "description": "At most two short sentences explaining the reasoning." },
-      "watch_out": { "type": "string", "description": "One short caution, or an empty string." }
+      "headline": {
+        "type": "string",
+        "description": "One short recommendation, at most 12 words."
+      },
+      "actions": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "2 to 4 concrete steps, each at most 18 words, in order."
+      },
+      "why": {
+        "type": "string",
+        "description": "At most two short sentences explaining the reasoning."
+      },
+      "watch_out": {
+        "type": "string",
+        "description": "One short caution, or an empty string."
+      }
     },
-    "required": ["headline", "actions", "why", "watch_out"],
+    "required": [
+      "headline",
+      "actions",
+      "why",
+      "watch_out"
+    ],
     "additionalProperties": false
-  }
+  },
+  "json_instruction": "\n\nReturn ONLY a JSON object, with no text before or after it, in exactly this shape: {\"headline\": string (at most 12 words), \"actions\": array of 2 to 4 short strings (each at most 18 words, in order), \"why\": string (at most two short sentences), \"watch_out\": string (one short caution, or empty)}."
 }

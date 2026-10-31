@@ -2,8 +2,13 @@
 
 Run (from Project_Demo_Local):
     pip install -r api/requirements.txt
-    set ANTHROPIC_API_KEY=sk-ant-...        (PowerShell: $env:ANTHROPIC_API_KEY="sk-ant-...")
     python api/server.py                     -> http://127.0.0.1:8787/app/
+
+AI provider (environment variables):
+    Claude:  ANTHROPIC_API_KEY=sk-ant-...                     (default model claude-opus-5-5)
+    Any OpenAI-compatible provider (OpenAI, Gemini, OpenRouter, Groq, DeepSeek, Mistral, Ollama, ...):
+             BT_AI_BASE_URL=https://api.openai.com/v1   BT_AI_MODEL=gpt-5.4-mini   BT_AI_KEY=sk-...
+    BT_AI_MODEL also overrides the Claude model.
 
 Endpoints
     GET  /api/status          service, model and AI availability
@@ -29,12 +34,17 @@ try:
     import anthropic
 except ImportError:  # the model endpoints still work without the AI package
     anthropic = None
+import httpx
 
 ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "app"
 MODEL = json.loads((APP / "model.json").read_text(encoding="utf-8"))
 PROMPT = json.loads((APP / "coach_prompt.json").read_text(encoding="utf-8"))
 MAX_HALFWIDTH_AH = 0.5
+COMPAT_BASE = os.environ.get("BT_AI_BASE_URL", "").rstrip("/")
+COMPAT_KEY = os.environ.get("BT_AI_KEY", "")
+AI_PROVIDER = "compat" if COMPAT_BASE else "anthropic"
+AI_MODEL = os.environ.get("BT_AI_MODEL") or (PROMPT["model"] if AI_PROVIDER == "anthropic" else "")
 
 app = FastAPI(title="BatteryTruth API", version="1.0")
 app.add_middleware(
@@ -126,24 +136,28 @@ def health_check(req: HealthRequest):
 _client = None
 
 
-def ai_client():
+def ai_available() -> bool:
+    if AI_PROVIDER == "compat":
+        return bool(AI_MODEL)
+    return anthropic is not None and bool(os.environ.get("ANTHROPIC_API_KEY"))
+
+
+def call_anthropic(system: str, messages: list, json_schema: dict | None) -> str:
     global _client
-    if anthropic is None or not os.environ.get("ANTHROPIC_API_KEY"):
-        raise HTTPException(503, detail="AI is not configured on this server.")
     if _client is None:
         _client = anthropic.Anthropic()
-    return _client
-
-
-def call_claude(**body) -> str:
-    client = ai_client()
+    output_config = {"effort": "low"}
+    if json_schema:
+        output_config["format"] = {"type": "json_schema", "schema": json_schema}
     try:
-        resp = client.beta.messages.create(
-            model=PROMPT["model"],
+        resp = _client.beta.messages.create(
+            model=AI_MODEL,
             max_tokens=8000,
             betas=["server-side-fallback-2026-07-01"],
             fallbacks="default",
-            **body,
+            system=system,
+            output_config=output_config,
+            messages=messages,
         )
     except anthropic.AuthenticationError:
         raise HTTPException(502, detail="The server's AI key is invalid.")
@@ -158,6 +172,57 @@ def call_claude(**body) -> str:
     if resp.stop_reason == "refusal":
         raise HTTPException(422, detail="The request was declined.")
     return "".join(b.text for b in resp.content if b.type == "text").strip()
+
+
+def call_compat(system: str, messages: list, want_json: bool) -> str:
+    headers = {"Content-Type": "application/json"}
+    if COMPAT_KEY:
+        headers["Authorization"] = "Bearer " + COMPAT_KEY
+
+    def send(json_mode: bool) -> httpx.Response:
+        body = {"model": AI_MODEL, "messages": [{"role": "system", "content": system}, *messages]}
+        if json_mode:
+            body["response_format"] = {"type": "json_object"}
+        try:
+            return httpx.post(COMPAT_BASE + "/chat/completions", headers=headers, json=body, timeout=120)
+        except httpx.HTTPError:
+            raise HTTPException(502, detail="Cannot reach the AI service.")
+
+    r = send(want_json)
+    if want_json and r.status_code == 400:  # provider without JSON mode
+        r = send(False)
+    if r.status_code in (401, 403):
+        raise HTTPException(502, detail="The server's AI key is invalid.")
+    if r.status_code == 429:
+        raise HTTPException(429, detail="The AI is busy, try again shortly.")
+    if r.status_code >= 400:
+        raise HTTPException(502, detail=f"AI service error {r.status_code}.")
+    try:
+        return r.json()["choices"][0]["message"]["content"].strip()
+    except (KeyError, IndexError, TypeError, ValueError):
+        raise HTTPException(502, detail="Unexpected AI response.")
+
+
+def call_ai(system: str, messages: list, json_schema: dict | None = None) -> str:
+    if not ai_available():
+        raise HTTPException(503, detail="AI is not configured on this server.")
+    if AI_PROVIDER == "compat":
+        return call_compat(system + (PROMPT["json_instruction"] if json_schema else ""), messages, bool(json_schema))
+    return call_anthropic(system, messages, json_schema)
+
+
+def parse_json(text: str) -> dict:
+    t = text.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+    try:
+        return json.loads(t)
+    except json.JSONDecodeError:
+        a, b = t.find("{"), t.rfind("}")
+        if a >= 0 and b > a:
+            try:
+                return json.loads(t[a:b + 1])
+            except json.JSONDecodeError:
+                pass
+    raise HTTPException(502, detail="Unexpected AI response.")
 
 
 class AdviseRequest(BaseModel):
@@ -176,15 +241,8 @@ class ChatRequest(BaseModel):
 
 @app.post("/api/coach/advise")
 def coach_advise(req: AdviseRequest):
-    text = call_claude(
-        system=PROMPT["system"],
-        output_config={"effort": "low", "format": {"type": "json_schema", "schema": PROMPT["advice_schema"]}},
-        messages=[{"role": "user", "content": "Context:\n" + json.dumps(req.context)}],
-    )
-    try:
-        return json.loads(text)
-    except json.JSONDecodeError:
-        raise HTTPException(502, detail="Unexpected AI response.")
+    text = call_ai(PROMPT["system"], [{"role": "user", "content": "Context:\n" + json.dumps(req.context)}], PROMPT["advice_schema"])
+    return parse_json(text)
 
 
 @app.post("/api/coach/chat")
@@ -196,7 +254,7 @@ def coach_chat(req: ChatRequest):
         {"role": "assistant", "content": "Got it. What would you like to know?"},
         *[t.model_dump() for t in req.history],
     ]
-    reply = call_claude(system=PROMPT["system"] + PROMPT["chat_suffix"], output_config={"effort": "low"}, messages=messages)
+    reply = call_ai(PROMPT["system"] + PROMPT["chat_suffix"], messages)
     return {"reply": reply}
 
 
@@ -208,8 +266,9 @@ def status():
         "version": app.version,
         "model_available": True,
         "model_version": MODEL["version"],
-        "ai_available": anthropic is not None and bool(os.environ.get("ANTHROPIC_API_KEY")),
-        "ai_model": PROMPT["model"],
+        "ai_available": ai_available(),
+        "ai_provider": "anthropic" if AI_PROVIDER == "anthropic" else COMPAT_BASE,
+        "ai_model": AI_MODEL,
     }
 
 
