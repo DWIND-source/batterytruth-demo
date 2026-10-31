@@ -1,9 +1,25 @@
 import { coach, SCENARIOS, DEFAULT_SCENARIO, runSession, parseLog } from "./engine.js";
-import { advise, chat, listModels, AIError, PROVIDERS } from "./ai.js";
+import { Server, AIError } from "./ai.js";
 
 /* ---------------- i18n ---------------- */
 const T = {
   vi: {
+    tab_log: "Nhật ký sạc", acct_btn: "Tài khoản", ai_off: "AI chưa bật cho bạn", ai_join: "Bắt đầu dùng AI",
+    e_noserver: "Chưa kết nối được máy chủ BatteryTruth — AI tạm thời chưa dùng được.", e_join: "Bấm “Bắt đầu” để dùng AI Coach miễn phí.", e_blocked: "Tài khoản đang tạm dừng. Hãy liên hệ hỗ trợ.",
+    e_ai_disabled: "AI Coach chưa được bật cho tài khoản của bạn.", e_ai_unavail: "AI Coach tạm thời không khả dụng, thử lại sau.", e_forbidden: "Không thực hiện được: {m}",
+    e_consent_chg: "Bật “Lưu dữ liệu sạc & xe” trong Tài khoản để dùng nhật ký sạc.", e_collect_off: "Tính năng lưu nhật ký đang tạm tắt.", e_geo: "Không lấy được vị trí (có thể bạn đã từ chối quyền vị trí).", e_weather: "Không lấy được thời tiết lúc này.",
+    loc_btn: "📍 Thời tiết tại chỗ", loc_temp: "Nhiệt độ hiện tại: {c}°C",
+    wel_h: "Chào mừng đến BatteryTruth", wel_sub: "Dùng AI Coach miễn phí, không cần email hay mật khẩu. Chọn những gì bạn muốn chia sẻ — có thể đổi ý hoặc xóa dữ liệu bất cứ lúc nào trong Tài khoản.",
+    p_name: "Tên gọi (không bắt buộc)", p_vehicle: "Xe của bạn (không bắt buộc)", consent_h: "Bạn cho phép BatteryTruth:",
+    c_loc: "Dùng vị trí của tôi", c_loc_d: "Lấy thời tiết tại chỗ và ghi vị trí kèm lần sạc.", c_chg: "Lưu dữ liệu sạc & xe", c_chg_d: "Nhật ký sạc, kết quả kiểm tra pin và dữ liệu từ xe đã kết nối — để gợi ý sát hơn theo thời gian.", c_use: "Lưu cách tôi dùng app & câu hỏi AI", c_use_d: "Giúp cải thiện AI Coach.",
+    privacy: "AI Coach chạy trên máy chủ BatteryTruth. Dữ liệu chỉ được lưu theo đúng các lựa chọn trên; thời tiết lấy từ Open-Meteo. Không chọn mục nào bạn vẫn dùng được AI và mọi tính năng.",
+    later: "Để sau", start: "Bắt đầu", welcome_ok: "Đã sẵn sàng! AI Coach đã bật.",
+    acct_h: "Tài khoản & quyền riêng tư", acct_on: "Mã tài khoản: {id}", acct_none: "Bạn chưa bắt đầu dùng AI Coach.", acct_noserver: "Chưa kết nối máy chủ BatteryTruth.",
+    del_data: "Xóa tài khoản & dữ liệu", del_confirm: "Xóa vĩnh viễn tài khoản và toàn bộ dữ liệu của bạn trên máy chủ?", deleted: "Đã xóa dữ liệu của bạn.", close: "Đóng", saved: "Đã lưu", copied: "Đã sao chép",
+    log_h: 'Nhật ký <span class="grad">sạc của bạn</span>', log_sub: "Ghi lại các lần sạc — nhập tay hoặc để xe/thiết bị gửi tự động. Càng nhiều dữ liệu, gợi ý càng sát với thói quen của bạn.",
+    log_add: "Thêm lần sạc", l_soc_start: "Pin lúc bắt đầu (%)", l_soc_end: "Pin lúc kết thúc (%)", l_kwh: "Điện năng (kWh)", l_dur: "Thời gian (phút)", l_charger: "Loại sạc", l_home: "Tại nhà",
+    l_power: "Công suất (kW)", l_temp: "Nhiệt độ ngoài trời (°C)", l_note: "Ghi chú", l_withloc: "Kèm vị trí hiện tại", l_save: "Lưu lần sạc", log_list: "Các lần sạc gần đây", l_when: "Lúc", l_battery: "Pin", l_empty: "Chưa có lần sạc nào.",
+    car_h: "Kết nối xe", car_sub: "Thiết bị OBD, app đồng hành hoặc kết nối của hãng xe có thể tự gửi trạng thái pin và sạc vào tài khoản của bạn bằng mã kết nối bên dưới. Hãy giữ bí mật mã này.", car_code: "Mã kết nối của bạn", copy: "Sao chép",
     tab_coach: "Sạc thông minh", tab_health: "Kiểm tra pin", tab_chat: "Hỏi AI", back: "← Giới thiệu", ai_btn: "AI",
     coach_h: 'Hôm nay pin của bạn <span class="grad">cần gì?</span>',
     coach_sub: "Cho biết trời nóng hay lạnh, pin còn bao nhiêu và khi nào bạn đi — BatteryTruth chọn cách sạc vừa đủ cho chuyến đi mà nhẹ nhàng nhất với pin.",
@@ -65,11 +81,27 @@ const T = {
     e_model: "Không tìm thấy model — bấm “Tải danh sách model” để chọn đúng tên.", e_config: "Thiếu cấu hình AI: {m}", remember: "Ghi nhớ trên thiết bị này",
     m_off: "Tắt AI", off_note: "Chỉ dùng bộ quy tắc chăm sóc pin (không gửi dữ liệu đi đâu).", cancel: "Hủy", save: "Lưu",
     srv_ok: "Đã kết nối · AI {ai}", srv_ai_on: "sẵn sàng", srv_ai_off: "chưa cấu hình key", srv_none: "Không tìm thấy máy chủ — nhập địa chỉ API nếu có.",
-    e_auth: "API key không hợp lệ.", e_rate: "AI đang bận, thử lại sau ít phút.", e_network: "Không kết nối được AI. Nếu nhà cung cấp chặn gọi từ trình duyệt, hãy dùng OpenRouter hoặc máy chủ BatteryTruth.", e_refusal: "AI không trả lời yêu cầu này.", e_other: "AI gặp lỗi: {m}", e_nokey: "Hãy kết nối AI trước (nút AI ở góc trên).",
+    e_auth: "API key không hợp lệ.", e_rate: "AI đang bận hoặc bạn đã dùng hết lượt hôm nay — thử lại sau.", e_network: "Không kết nối được máy chủ BatteryTruth.", e_refusal: "AI không trả lời yêu cầu này.", e_other: "AI gặp lỗi: {m}", e_nokey: "Hãy kết nối AI trước (nút AI ở góc trên).",
     a_steps: "Các bước", a_why: "Vì sao",
     h: "giờ", hm: "{h} giờ {m} phút", mins: "{m} phút",
   },
   en: {
+    tab_log: "Charging log", acct_btn: "Account", ai_off: "AI not enabled for you", ai_join: "Start using AI",
+    e_noserver: "Can't reach the BatteryTruth server — AI is unavailable for now.", e_join: "Press “Start” to use the AI Coach for free.", e_blocked: "Your account is paused. Please contact support.",
+    e_ai_disabled: "The AI Coach isn't enabled for your account.", e_ai_unavail: "The AI Coach is temporarily unavailable, try again later.", e_forbidden: "Not allowed: {m}",
+    e_consent_chg: "Turn on “Save charging & vehicle data” in Account to use the charging log.", e_collect_off: "The charging log is turned off for now.", e_geo: "Couldn't get your location (permission may be blocked).", e_weather: "Couldn't get the weather right now.",
+    loc_btn: "📍 Local weather", loc_temp: "Current temperature: {c}°C",
+    wel_h: "Welcome to BatteryTruth", wel_sub: "Use the AI Coach for free — no email or password. Choose what you'd like to share; you can change your mind or delete your data any time under Account.",
+    p_name: "Name (optional)", p_vehicle: "Your car (optional)", consent_h: "You allow BatteryTruth to:",
+    c_loc: "Use my location", c_loc_d: "Get local weather and attach a location to charging sessions.", c_chg: "Save charging & vehicle data", c_chg_d: "Charging log, battery checks and data from a connected car — for advice that gets better over time.", c_use: "Save how I use the app & my AI questions", c_use_d: "Helps improve the AI Coach.",
+    privacy: "The AI Coach runs on the BatteryTruth server. Data is stored only as chosen above; weather comes from Open-Meteo. With nothing selected you can still use the AI and every feature.",
+    later: "Later", start: "Start", welcome_ok: "All set! The AI Coach is on.",
+    acct_h: "Account & privacy", acct_on: "Account ID: {id}", acct_none: "You haven't started using the AI Coach yet.", acct_noserver: "Not connected to the BatteryTruth server.",
+    del_data: "Delete account & data", del_confirm: "Permanently delete your account and all your data on the server?", deleted: "Your data was deleted.", close: "Close", saved: "Saved", copied: "Copied",
+    log_h: 'Your <span class="grad">charging log</span>', log_sub: "Record your charges — by hand, or let your car or device send them automatically. The more data, the closer the advice fits your habits.",
+    log_add: "Add a charge", l_soc_start: "Battery at start (%)", l_soc_end: "Battery at end (%)", l_kwh: "Energy (kWh)", l_dur: "Duration (min)", l_charger: "Charger", l_home: "Home",
+    l_power: "Power (kW)", l_temp: "Outside temperature (°C)", l_note: "Note", l_withloc: "Attach my current location", l_save: "Save charge", log_list: "Recent charges", l_when: "When", l_battery: "Battery", l_empty: "No charges yet.",
+    car_h: "Connect your car", car_sub: "An OBD adapter, companion app or carmaker connection can send battery and charging status to your account automatically using the connection code below. Keep this code private.", car_code: "Your connection code", copy: "Copy",
     tab_coach: "Smart charging", tab_health: "Battery check", tab_chat: "Ask AI", back: "← Overview", ai_btn: "AI",
     coach_h: 'What does your battery <span class="grad">need today?</span>',
     coach_sub: "Tell us how hot or cold it is, how much charge you have and when you leave — BatteryTruth picks the charge that covers your trip and is gentlest on the battery.",
@@ -131,7 +163,7 @@ const T = {
     e_model: "Model not found — use “Load model list” to pick the exact name.", e_config: "AI settings incomplete: {m}", remember: "Remember on this device",
     m_off: "AI off", off_note: "Battery-care rules only (nothing is sent anywhere).", cancel: "Cancel", save: "Save",
     srv_ok: "Connected · AI {ai}", srv_ai_on: "ready", srv_ai_off: "no key configured", srv_none: "No server found — enter an API address if you have one.",
-    e_auth: "Invalid API key.", e_rate: "The AI is busy, try again in a minute.", e_network: "Can't reach the AI. If the provider blocks browser calls, use OpenRouter or the BatteryTruth server.", e_refusal: "The AI declined this request.", e_other: "AI error: {m}", e_nokey: "Connect the AI first (AI button, top right).",
+    e_auth: "Invalid API key.", e_rate: "The AI is busy or you've used today's questions — try again later.", e_network: "Can't reach the BatteryTruth server.", e_refusal: "The AI declined this request.", e_other: "AI error: {m}", e_nokey: "Connect the AI first (AI button, top right).",
     a_steps: "Steps", a_why: "Why",
     h: "h", hm: "{h} h {m} min", mins: "{m} min",
   },
@@ -153,7 +185,7 @@ function applyLang() {
   document.querySelectorAll("[data-i]").forEach(el => (el.innerHTML = t(el.dataset.i)));
   $("#langBtn").innerHTML = LANG === "vi" ? "EN · <b>VI</b>" : "<b>EN</b> · VI";
   $("#askIn").placeholder = t("ask_ph"); $("#askBtn").textContent = t("send");
-  renderScenarioChips(); renderCoach(); renderSamples(); renderHealth(); renderSugg(); renderChat(); renderAiState();
+  renderScenarioChips(); renderCoach(); renderSamples(); renderHealth(); renderSugg(); renderChat(); renderAiState(); if (typeof renderLog === "function") renderLog();
 }
 function applyTheme() { document.documentElement.dataset.theme = THEME; $("#themeBtn").textContent = THEME === "light" ? "☀" : "☾"; }
 $("#langBtn").onclick = () => { LANG = LANG === "vi" ? "en" : "vi"; savePref("lang", LANG); applyLang(); };
@@ -167,90 +199,128 @@ function show(v) {
 }
 document.querySelectorAll("#tabs button").forEach(b => (b.onclick = () => show(b.dataset.v)));
 
-/* ---------------- AI connection ---------------- */
-const AI = { mode: pref("aimode", ""), apiBase: pref("apibase", ""), provider: pref("ai_provider", "anthropic"), model: "", baseURL: "", key: "", server: null };
-if (!PROVIDERS[AI.provider]) AI.provider = "anthropic";
-const store = () => (pref("apikey_remember", "") ? localStorage : sessionStorage);
-function loadProviderCfg(p) {
-  let key = "";
-  try { key = localStorage.getItem("bt_key_" + p) || sessionStorage.getItem("bt_key_" + p) || (p === "anthropic" ? localStorage.getItem("bt_apikey") || sessionStorage.getItem("bt_apikey") || "" : ""); } catch {}
-  return { key, model: pref("ai_model_" + p, PROVIDERS[p].model), baseURL: pref("ai_base_" + p, PROVIDERS[p].base) };
+/* ---------------- account & server ---------------- */
+const API_BASE = (q.api || window.BT_CONFIG?.apiBase || "").replace(/\/+$/, "");
+const ACC = { server: null, token: "", profile: null };
+try { ACC.token = localStorage.getItem("bt_user_token") || ""; } catch {}
+let SRV = new Server(API_BASE, ACC.token);
+function setToken(tok) {
+  ACC.token = tok; SRV = new Server(API_BASE, tok);
+  try { tok ? localStorage.setItem("bt_user_token", tok) : localStorage.removeItem("bt_user_token"); } catch {}
 }
-Object.assign(AI, loadProviderCfg(AI.provider));
-async function probeServer() {
-  // a static host (e.g. GitHub Pages) has no API unless an address is configured
-  if (!AI.apiBase && location.hostname.endsWith("github.io")) { AI.server = null; if (!AI.mode) AI.mode = byokReady() ? "byok" : "off"; renderAiState(); renderHealth(); return; }
-  try {
-    const ctl = new AbortController(); setTimeout(() => ctl.abort(), 2000);
-    const r = await fetch((AI.apiBase || "") + "/api/status", { signal: ctl.signal });
-    AI.server = r.ok ? await r.json() : null;
-    if (AI.server && !AI.server.service?.startsWith("batterytruth")) AI.server = null;
-  } catch { AI.server = null; }
-  if (!AI.mode) AI.mode = AI.server?.ai_available ? "server" : byokReady() ? "byok" : "off";
-  renderAiState(); renderHealth();
+async function initAccount() {
+  if (!API_BASE && location.hostname.endsWith("github.io")) ACC.server = null; // no server configured for this static copy
+  else {
+    try { ACC.server = await SRV.status(); if (!String(ACC.server?.service || "").startsWith("batterytruth")) ACC.server = null; } catch { ACC.server = null; }
+    if (ACC.server && ACC.token) { try { ACC.profile = await SRV.me(); } catch (e) { if (e.code === "auth") setToken(""); } }
+  }
+  renderAiState(); renderHealth(); renderLog();
+  if (ACC.server && !ACC.profile && !pref("welcome_skipped", "")) openWelcome();
 }
-function byokReady() { return !!(AI.key || (PROVIDERS[AI.provider].keyless && AI.baseURL && AI.model)); }
-function aiReady() { return (AI.mode === "server" && AI.server?.ai_available) || (AI.mode === "byok" && byokReady()); }
+function aiReady() { return !!(ACC.server?.ai_available && ACC.profile && ACC.profile.status === "active" && ACC.profile.ai_enabled); }
+function aiBlockedMsg() {
+  if (!ACC.server) return t("e_noserver");
+  if (!ACC.profile) return t("e_join");
+  if (ACC.profile.status !== "active") return t("e_blocked");
+  if (!ACC.profile.ai_enabled) return t("e_ai_disabled");
+  return t("e_ai_unavail");
+}
 function renderAiState() {
-  $("#aiDot").classList.toggle("on", !!aiReady());
-  const b = $("#adviseBtn"); b.textContent = aiReady() ? "✦ " + t("ai_go") : t("ai_need");
-  $("#aiBtn").title = aiReady() ? (AI.mode === "server" ? "BatteryTruth API" : PROVIDERS[AI.provider].name + " · " + AI.model) : "AI";
+  $("#aiDot").classList.toggle("on", !!ACC.profile);
+  $("#adviseBtn").textContent = aiReady() ? "✦ " + t("ai_go") : ACC.profile ? t("ai_off") : t("ai_join");
 }
-function fillProviderFields(p, cfg) {
-  const P = PROVIDERS[p];
-  $("#apiKey").value = cfg.key; $("#aiModel").value = cfg.model; $("#baseURL").value = cfg.baseURL;
-  $("#apiKey").placeholder = P.keyless ? t("key_optional") : p === "anthropic" ? "sk-ant-…" : "…";
-  $("#baseRow").style.display = P.editableBase ? "" : "none";
-  $("#keyLink").style.display = P.keyUrl ? "" : "none"; $("#keyLink").href = P.keyUrl || "#";
-  $("#provNote").textContent = p === "ollama" ? t("note_ollama") : p === "custom" ? t("note_custom") : p === "anthropic" ? "" : t("note_compat");
-  $("#modelList").innerHTML = "";
-}
+function explainAI() { if (ACC.server && !ACC.profile) return openWelcome(); toast(aiBlockedMsg()); }
+function openWelcome() { ["w_loc", "w_chg", "w_use"].forEach(id => ($("#" + id).checked = false)); $("#welcome").classList.add("on"); }
+$("#w_skip").onclick = () => { savePref("welcome_skipped", "1"); $("#welcome").classList.remove("on"); };
+$("#w_go").onclick = async () => {
+  try {
+    const r = await SRV.register({ name: $("#w_name").value.trim(), vehicle: $("#w_vehicle").value.trim(), chem: S.chem, consents: { location: $("#w_loc").checked, charging: $("#w_chg").checked, usage: $("#w_use").checked } });
+    setToken(r.token); ACC.profile = await SRV.me();
+    $("#welcome").classList.remove("on"); toast(t("welcome_ok")); renderAiState(); renderLog();
+  } catch (e) { toast(aiErr(e)); }
+};
 function openSettings() {
-  document.querySelectorAll("input[name=aimode]").forEach(r => (r.checked = r.value === (AI.mode || "off")));
-  $("#apiBase").value = AI.apiBase; $("#remember").checked = !!pref("apikey_remember", "");
-  $("#provider").innerHTML = Object.entries(PROVIDERS).map(([k, v]) => `<option value="${k}">${v.name}</option>`).join("");
-  $("#provider").value = AI.provider; fillProviderFields(AI.provider, AI);
-  $("#srvStatus").textContent = AI.server ? t("srv_ok", { ai: AI.server.ai_available ? t("srv_ai_on") + " · " + (AI.server.ai_model || "") : t("srv_ai_off") }) : t("srv_none");
+  const has = !!ACC.profile;
+  $("#acctBody").style.display = has ? "" : "none"; $("#acctNone").style.display = has ? "none" : "";
+  $("#acctState").textContent = !ACC.server ? t("acct_noserver") : has ? t("acct_on", { id: ACC.profile.id }) : t("acct_none");
+  if (has) {
+    const p = ACC.profile; $("#a_name").value = p.name || ""; $("#a_vehicle").value = p.vehicle || "";
+    $("#a_loc").checked = !!p.consent_location; $("#a_chg").checked = !!p.consent_charging; $("#a_use").checked = !!p.consent_usage;
+  }
+  $("#a_join").style.display = ACC.server ? "" : "none";
   $("#modal").classList.add("on");
 }
-$("#provider").onchange = e => { $("#byokRadio").checked = true; fillProviderFields(e.target.value, loadProviderCfg(e.target.value)); };
-$("#byokBox").addEventListener("click", e => { if (e.target.closest("a")) return; $("#byokRadio").checked = true; });
-$("#loadModels").onclick = async e => {
-  e.preventDefault(); const link = e.currentTarget; const old = link.textContent; link.textContent = "…";
-  try {
-    const p = $("#provider").value;
-    const ids = await listModels({ provider: p, apiKey: $("#apiKey").value.trim(), baseURL: $("#baseURL").value.trim() || PROVIDERS[p].base });
-    $("#modelList").innerHTML = ids.map(id => `<option value="${id}">`).join("");
-    toast(t("models_found", { n: ids.length })); $("#aiModel").focus();
-  } catch (err) { toast(aiErr(err)); }
-  link.textContent = old;
-};
 $("#aiBtn").onclick = openSettings;
 $("#setCancel").onclick = () => $("#modal").classList.remove("on");
+$("#setCancel2").onclick = () => $("#modal").classList.remove("on");
+$("#a_join").onclick = () => { $("#modal").classList.remove("on"); openWelcome(); };
 $("#setSave").onclick = async () => {
-  AI.mode = document.querySelector("input[name=aimode]:checked")?.value || "off";
-  AI.apiBase = $("#apiBase").value.trim().replace(/\/+$/, ""); savePref("aimode", AI.mode); savePref("apibase", AI.apiBase);
-  const p = $("#provider").value || AI.provider;
-  AI.provider = p; savePref("ai_provider", p);
-  AI.key = $("#apiKey").value.trim();
-  AI.model = $("#aiModel").value.trim() || PROVIDERS[p].model; savePref("ai_model_" + p, AI.model);
-  AI.baseURL = PROVIDERS[p].editableBase ? $("#baseURL").value.trim().replace(/\/+$/, "") : PROVIDERS[p].base; savePref("ai_base_" + p, AI.baseURL);
   try {
-    savePref("apikey_remember", $("#remember").checked ? "1" : "");
-    localStorage.removeItem("bt_key_" + p); sessionStorage.removeItem("bt_key_" + p); localStorage.removeItem("bt_apikey"); sessionStorage.removeItem("bt_apikey");
-    if (AI.key) store().setItem("bt_key_" + p, AI.key);
-  } catch {}
-  $("#modal").classList.remove("on");
-  await probeServer();
+    ACC.profile = await SRV.updateMe({ name: $("#a_name").value.trim(), vehicle: $("#a_vehicle").value.trim(), consents: { location: $("#a_loc").checked, charging: $("#a_chg").checked, usage: $("#a_use").checked } });
+    $("#modal").classList.remove("on"); toast(t("saved")); renderAiState(); renderLog();
+  } catch (e) { toast(aiErr(e)); }
+};
+$("#a_delete").onclick = async () => {
+  if (!confirm(t("del_confirm"))) return;
+  try { await SRV.deleteMe(); } catch {}
+  setToken(""); ACC.profile = null; $("#modal").classList.remove("on"); toast(t("deleted")); renderAiState(); renderLog();
 };
 function aiErr(e) {
   if (e instanceof AIError) {
-    const m = { auth: "e_auth", rate: "e_rate", network: "e_network", refusal: "e_refusal", model: "e_model", config: "e_config" }[e.code];
+    const m = { network: "e_network", rate: "e_rate", refusal: "e_refusal", unavailable: "e_ai_unavail", forbidden: "e_forbidden" }[e.code];
     return m ? t(m, { m: e.message }) : t("e_other", { m: e.message });
   }
   return t("e_other", { m: e.message || String(e) });
 }
-const aiCall = () => ({ mode: AI.mode, provider: AI.provider, apiKey: AI.key, model: AI.model, baseURL: AI.baseURL, apiBase: AI.apiBase });
+
+/* ---------------- location + local weather ---------------- */
+let LAST_LOC = null;
+const getPos = () => new Promise((ok, no) => navigator.geolocation ? navigator.geolocation.getCurrentPosition(p => ok(p.coords), no, { timeout: 10000, maximumAge: 300000 }) : no());
+$("#locBtn").onclick = async e => {
+  e.preventDefault();
+  let c; try { c = await getPos(); } catch { return toast(t("e_geo")); }
+  LAST_LOC = { lat: +c.latitude.toFixed(5), lon: +c.longitude.toFixed(5) };
+  let temp = null;
+  try { const w = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${c.latitude.toFixed(3)}&longitude=${c.longitude.toFixed(3)}&current=temperature_2m`)).json(); temp = w?.current?.temperature_2m; } catch {}
+  if (Number.isFinite(temp)) { S.ambientC = Math.max(-15, Math.min(45, Math.round(temp))); activeScenario = ""; update(); toast(t("loc_temp", { c: Math.round(temp) })); }
+  else toast(t("e_weather"));
+  if (ACC.profile?.consent_location && ACC.server?.collect?.location)
+    SRV.location({ ...LAST_LOC, accuracy_m: c.accuracy, ambient_c: Number.isFinite(temp) ? temp : null }).catch(() => {});
+};
+
+/* ---------------- charging log ---------------- */
+let LOG_CHARGER = "AC";
+document.querySelectorAll("#l_charger button").forEach(b => (b.onclick = () => { LOG_CHARGER = b.dataset.v; document.querySelectorAll("#l_charger button").forEach(x => x.classList.toggle("on", x === b)); }));
+async function renderLog() {
+  $("#l_save").textContent = t("l_save");
+  const gate = !ACC.server ? t("e_noserver") : !ACC.profile ? t("e_join") : !ACC.profile.consent_charging ? t("e_consent_chg") : !ACC.server.collect?.charging ? t("e_collect_off") : "";
+  $("#logGate").textContent = gate; $("#l_save").disabled = !!gate;
+  $("#devToken").value = ACC.token || ""; $("#telUrl").textContent = (API_BASE || location.origin) + "/api/v1/telemetry";
+  let rows = [];
+  if (!gate) { try { rows = await SRV.sessions(); } catch {} }
+  const esc = x => String(x ?? "").replace(/[&<>]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[ch]));
+  $("#logTbl").innerHTML = rows.length
+    ? `<tr><th>${t("l_when")}</th><th>${t("l_battery")}</th><th>kWh</th><th>${t("l_charger")}</th><th>°C</th><th></th></tr>` + rows.map(r => `<tr><td>${new Date(r.ts * 1000).toLocaleString(LANG === "vi" ? "vi-VN" : "en-GB", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</td><td>${r.soc_start ?? "?"}% → ${r.soc_end ?? "?"}%</td><td>${r.kwh ?? "—"}</td><td>${esc(r.charger)} ${r.power_kw ? r.power_kw + " kW" : ""}</td><td>${r.ambient_c ?? "—"}</td><td><a href="#" data-del="${r.id}">✕</a></td></tr>`).join("")
+    : `<tr><td class="small">${t("l_empty")}</td></tr>`;
+  document.querySelectorAll("#logTbl a[data-del]").forEach(a => (a.onclick = async ev => { ev.preventDefault(); await SRV.deleteSession(a.dataset.del).catch(() => {}); renderLog(); }));
+}
+$("#l_save").onclick = async () => {
+  const num = id => { const v = $("#" + id).value.trim(); return v === "" ? null : +v; };
+  const body = { source: "manual", soc_start: num("l_soc_start"), soc_end: num("l_soc_end"), kwh: num("l_kwh"), duration_min: num("l_dur"), power_kw: num("l_power"), ambient_c: num("l_temp"), charger: LOG_CHARGER, note: $("#l_note").value.trim() };
+  if ($("#l_withloc").checked) {
+    if (!LAST_LOC) { try { const c = await getPos(); LAST_LOC = { lat: +c.latitude.toFixed(5), lon: +c.longitude.toFixed(5) }; } catch { toast(t("e_geo")); } }
+    if (LAST_LOC) Object.assign(body, LAST_LOC);
+  }
+  try {
+    await SRV.addSession(body); toast(t("saved"));
+    ["l_soc_start", "l_soc_end", "l_kwh", "l_dur", "l_power", "l_temp", "l_note"].forEach(id => ($("#" + id).value = ""));
+    renderLog();
+  } catch (e) { toast(aiErr(e)); }
+};
+$("#copyToken").onclick = async () => {
+  if (!ACC.token) return toast(t("e_join"));
+  try { await navigator.clipboard.writeText(ACC.token); toast(t("copied")); } catch { $("#devToken").type = "text"; $("#devToken").select(); }
+};
 
 /* ---------------- coach ---------------- */
 let S = { ...DEFAULT_SCENARIO }, activeScenario = "", lastPlan = null, lastHealth = null;
@@ -310,11 +380,11 @@ function context() {
     health_check: lastHealth };
 }
 $("#adviseBtn").onclick = async () => {
-  if (!aiReady()) return openSettings();
+  if (!aiReady()) return explainAI();
   const out = $("#aiOut"), btn = $("#adviseBtn");
   btn.disabled = true; out.innerHTML = `<p class="small"><span class="spin"></span></p>`;
   try {
-    const a = await advise({ ...aiCall(), context: context() });
+    const a = await SRV.advise(context());
     const esc = s => String(s).replace(/[&<>]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[ch]));
     out.innerHTML = `<h4>${esc(a.headline)}</h4><ol>${(a.actions || []).map(x => `<li>${esc(x)}</li>`).join("")}</ol><p><b>${t("a_why")}:</b> ${esc(a.why)}</p>${a.watch_out ? `<p class="warn">⚠ ${esc(a.watch_out)}</p>` : ""}`;
   } catch (e) { out.innerHTML = `<p class="warn">${aiErr(e)}</p>`; }
@@ -353,11 +423,8 @@ $("#tmpl").onclick = async e => {
 };
 
 async function assess(rows) {
-  if (AI.server?.model_available) {
-    try {
-      const r = await fetch((AI.apiBase || "") + "/api/health-check", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ observations: rows }) });
-      if (r.ok) return { ...(await r.json()), engine: "server" };
-    } catch {}
+  if (ACC.server?.model_available) {
+    try { return { ...(await SRV.healthCheck(rows)), engine: "server" }; } catch {}
   }
   return { ...runSession(MODEL, rows), engine: "browser" };
 }
@@ -382,7 +449,7 @@ function drawChart(rows, upto, res) {
 }
 
 function renderHealth() {
-  $("#engineBadge").innerHTML = `<span class="dot on"></span>${AI.server?.model_available ? t("eng_server") : t("eng_browser")}`;
+  $("#engineBadge").innerHTML = `<span class="dot on"></span>${ACC.server?.model_available ? t("eng_server") : t("eng_browser")}`;
   const v = $("#verdict"), res = lastRun;
   v.className = "verdict"; $("#range").style.display = "none"; $("#vTruth").textContent = "";
   if (!res) { $("#vTitle").textContent = "—"; $("#vText").textContent = t("v_idle"); $("#log").innerHTML = ""; $("#tbl").innerHTML = ""; $("#progTxt").textContent = ""; return; }
@@ -442,11 +509,11 @@ function renderSugg() {
 }
 async function ask(text) {
   text = text.trim(); if (!text) return;
-  if (!aiReady()) { CHAT.push({ role: "user", content: text }, { role: "error", content: t("e_nokey") }); renderChat(); return openSettings(); }
+  if (!aiReady()) { CHAT.push({ role: "user", content: text }, { role: "error", content: aiBlockedMsg() }); renderChat(); if (ACC.server && !ACC.profile) openWelcome(); return; }
   CHAT.push({ role: "user", content: text }); const pending = { role: "assistant", content: "", pending: true }; CHAT.push(pending); renderChat();
   $("#askIn").value = ""; $("#askBtn").disabled = true;
   const history = CHAT.filter(m => (m.role === "user" || m.role === "assistant") && !m.pending).map(m => ({ role: m.role, content: m.content }));
-  try { pending.content = await chat({ ...aiCall(), context: context(), history }); pending.pending = false; }
+  try { pending.content = await SRV.chat(context(), history); pending.pending = false; }
   catch (e) { CHAT.splice(CHAT.indexOf(pending), 1); CHAT.push({ role: "error", content: aiErr(e) }); }
   $("#askBtn").disabled = false; renderChat();
 }
@@ -457,7 +524,7 @@ applyTheme();
 const startTab = (location.hash || "#coach").slice(1);
 if (q.scenario && SCENARIOS[q.scenario]) { activeScenario = q.scenario; S = { ...DEFAULT_SCENARIO, ...SCENARIOS[q.scenario] }; }
 bindForm(); syncForm(); applyLang();
-show(["coach", "health", "chat"].includes(startTab) ? startTab : "coach");
+show(["coach", "health", "log", "chat"].includes(startTab) ? startTab : "coach");
 await loadModel(); drawChart(null, 0); renderHealth();
-probeServer();
+initAccount();
 if (q.sample && q.autorun) { SEL = q.sample; renderSamples(); $("#runBtn").click(); }

@@ -8,8 +8,8 @@ BatteryTruth demo - how to open
      (or open a terminal in this folder and run:  python -m http.server 8080 --bind 127.0.0.1)
    - open http://localhost:8080 (pitch) or http://localhost:8080/app/ (app)
 
-   Full stack with the AI Coach on the server: set ANTHROPIC_API_KEY, then double-click api\start_api.bat
-   (opens http://127.0.0.1:8787/app/).
+   The AI Coach, accounts and the operator dashboard run on the private BatteryTruth server
+   (separate folder, not in this repository).
 
 3) Stop the local server: press Ctrl+C in the server window, or close that window.
 

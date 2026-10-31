@@ -52,7 +52,11 @@ input[type=range]{width:100%;accent-color:var(--teal);height:22px}
 .seg button.on{background:color-mix(in srgb,var(--teal) 18%,transparent);color:var(--teal)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .tog{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--card2);font-size:14px;cursor:pointer}
-.tog input{width:18px;height:18px;accent-color:var(--teal)}
+.tog input{width:18px;height:18px;accent-color:var(--teal);flex:none}
+.result .grid,.grid.g2{grid-template-columns:1fr 1fr}
+#v-log .grid{grid-template-columns:420px 1fr}
+code{background:var(--card2);padding:2px 6px;border-radius:6px;font-size:12.5px}
+@media (max-width:980px){#v-log .grid{grid-template-columns:1fr}}
 select,input[type=number],input[type=text],input[type=password],input[type=url]{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:14px}
 .result{display:flex;flex-direction:column;gap:16px}
 .reco{display:grid;grid-template-columns:150px 1fr;gap:22px;align-items:center}
@@ -160,13 +164,14 @@ html[data-theme=light] .m.u{color:#fff}
   <nav class="tabs" id="tabs">
     <button data-v="coach" class="on" data-i="tab_coach"></button>
     <button data-v="health" data-i="tab_health"></button>
+    <button data-v="log" data-i="tab_log"></button>
     <button data-v="chat" data-i="tab_chat"></button>
   </nav>
   <div class="hbtns">
     <a class="pill" href="../index.html" data-i="back"></a>
     <button class="pill" id="langBtn"></button>
     <button class="pill" id="themeBtn" title="Light / dark">☾</button>
-    <button class="pill" id="aiBtn"><span class="dot" id="aiDot"></span><span data-i="ai_btn"></span></button>
+    <button class="pill" id="aiBtn"><span class="dot" id="aiDot"></span><span data-i="acct_btn"></span></button>
   </div>
 </div></header>
 
@@ -179,7 +184,7 @@ html[data-theme=light] .m.u{color:#fff}
   <div class="chips" id="scen"></div>
   <div class="grid">
     <div class="card" id="form">
-      <div class="f"><label><span data-i="f_temp"></span><b id="o_ambientC"></b></label><input type="range" id="ambientC" min="-15" max="45" step="1"></div>
+      <div class="f"><label><span data-i="f_temp"></span><span><a href="#" id="locBtn" class="small" data-i="loc_btn" style="margin-right:10px"></a><b id="o_ambientC"></b></span></label><input type="range" id="ambientC" min="-15" max="45" step="1"></div>
       <div class="f"><label><span data-i="f_soc"></span><b id="o_soc"></b></label><input type="range" id="soc" min="0" max="100" step="1"></div>
       <div class="f"><label><span data-i="f_hours"></span><b id="o_hours"></b></label><input type="range" id="hours" min="0.25" max="24" step="0.25"></div>
       <div class="f"><label><span data-i="f_trip"></span><b id="o_tripKm"></b></label><input type="range" id="tripKm" min="0" max="600" step="5"></div>
@@ -252,6 +257,33 @@ html[data-theme=light] .m.u{color:#fff}
   </div>
 </section>
 
+<!-- LOG -->
+<section class="view" id="v-log">
+  <h1 data-i="log_h"></h1>
+  <p class="sub" data-i="log_sub"></p>
+  <div class="grid" style="margin-top:22px">
+    <div class="card" id="logForm">
+      <div class="lbl" data-i="log_add"></div>
+      <div class="row2 f"><div><div class="lbl" data-i="l_soc_start"></div><input type="number" id="l_soc_start" min="0" max="100"></div><div><div class="lbl" data-i="l_soc_end"></div><input type="number" id="l_soc_end" min="0" max="100"></div></div>
+      <div class="row2 f"><div><div class="lbl" data-i="l_kwh"></div><input type="number" id="l_kwh" min="0" step="0.1"></div><div><div class="lbl" data-i="l_dur"></div><input type="number" id="l_dur" min="0"></div></div>
+      <div class="f"><div class="lbl" data-i="l_charger"></div><div class="seg" id="l_charger"><button data-v="AC" class="on">AC</button><button data-v="DC">DC</button><button data-v="home" data-i="l_home"></button></div></div>
+      <div class="row2 f"><div><div class="lbl" data-i="l_power"></div><input type="number" id="l_power" min="0" step="0.1"></div><div><div class="lbl" data-i="l_temp"></div><input type="number" id="l_temp" min="-40" max="60"></div></div>
+      <div class="f"><div class="lbl" data-i="l_note"></div><input type="text" id="l_note" maxlength="300"></div>
+      <label class="small" style="display:flex;gap:8px;margin-bottom:14px"><input type="checkbox" id="l_withloc"> <span data-i="l_withloc"></span></label>
+      <button class="btn" id="l_save" style="width:100%;justify-content:center"></button>
+      <p class="small" id="logGate" style="margin-top:10px"></p>
+    </div>
+    <div class="result">
+      <div class="card"><div class="lbl" data-i="log_list"></div><table id="logTbl"></table></div>
+      <div class="card"><div class="lbl" data-i="car_h"></div><p class="small" data-i="car_sub" style="font-size:14.5px;line-height:1.55"></p>
+        <div class="lbl" style="margin-top:12px" data-i="car_code"></div>
+        <div style="display:flex;gap:8px"><input type="password" id="devToken" readonly><button class="btn ghost" id="copyToken" data-i="copy"></button></div>
+        <p class="small" style="margin-top:10px">POST <code id="telUrl"></code><br>{"soc": 54, "charging": true, "power_kw": 7.2, "pack_temp_c": 31, "lat": 21.03, "lon": 105.85}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- CHAT -->
 <section class="view" id="v-chat">
   <h1 data-i="chat_h"></h1>
@@ -265,22 +297,35 @@ html[data-theme=light] .m.u{color:#fff}
 
 </main>
 
+<div class="modal" id="welcome"><div class="card">
+  <h3 data-i="wel_h"></h3>
+  <p class="small" data-i="wel_sub" style="font-size:14.5px;line-height:1.55"></p>
+  <div class="row2 f" style="margin-top:14px"><div><div class="lbl" data-i="p_name"></div><input type="text" id="w_name" maxlength="80"></div><div><div class="lbl" data-i="p_vehicle"></div><input type="text" id="w_vehicle" maxlength="80" placeholder="VinFast VF 8, Tesla Model 3…"></div></div>
+  <div class="lbl" data-i="consent_h"></div>
+  <label class="tog" style="margin-bottom:8px"><span><b data-i="c_loc"></b><br><span class="small" data-i="c_loc_d"></span></span><input type="checkbox" id="w_loc"></label>
+  <label class="tog" style="margin-bottom:8px"><span><b data-i="c_chg"></b><br><span class="small" data-i="c_chg_d"></span></span><input type="checkbox" id="w_chg"></label>
+  <label class="tog" style="margin-bottom:8px"><span><b data-i="c_use"></b><br><span class="small" data-i="c_use_d"></span></span><input type="checkbox" id="w_use"></label>
+  <p class="small" data-i="privacy"></p>
+  <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px"><button class="btn ghost" id="w_skip" data-i="later"></button><button class="btn" id="w_go" data-i="start"></button></div>
+</div></div>
+
 <div class="modal" id="modal"><div class="card">
-  <h3 data-i="set_h"></h3>
-  <p class="small" data-i="set_sub"></p>
-  <label class="radio"><input type="radio" name="aimode" value="server"><div><b data-i="m_server"></b><div class="small" id="srvStatus"></div><input type="url" id="apiBase" style="margin-top:8px" placeholder="https://… (để trống = cùng máy chủ)"></div></label>
-  <div class="radio" id="byokBox"><input type="radio" name="aimode" value="byok" id="byokRadio"><div style="flex:1;min-width:0"><b data-i="m_byok"></b><div class="small" data-i="byok_note"></div>
-    <div class="lbl" style="margin:12px 0 6px" data-i="prov"></div><select id="provider"></select>
-    <div class="lbl" style="margin:12px 0 6px"><span data-i="key"></span><a id="keyLink" target="_blank" rel="noopener" data-i="get_key"></a></div><input type="password" id="apiKey" autocomplete="off">
-    <div class="lbl" style="margin:12px 0 6px"><span>Model</span><a href="#" id="loadModels" data-i="load_models"></a></div><input type="text" id="aiModel" list="modelList" autocomplete="off"><datalist id="modelList"></datalist>
-    <div id="baseRow"><div class="lbl" style="margin:12px 0 6px" data-i="base_url"></div><input type="url" id="baseURL" placeholder="https://…/v1"></div>
-    <div class="small" id="provNote" style="margin-top:8px"></div>
-    <label class="small" style="display:flex;gap:6px;margin-top:10px"><input type="checkbox" id="remember"> <span data-i="remember"></span></label></div></div>
-  <label class="radio"><input type="radio" name="aimode" value="off"><div><b data-i="m_off"></b><div class="small" data-i="off_note"></div></div></label>
-  <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px"><button class="btn ghost" id="setCancel" data-i="cancel"></button><button class="btn" id="setSave" data-i="save"></button></div>
+  <h3 data-i="acct_h"></h3>
+  <p class="small" id="acctState"></p>
+  <div id="acctBody">
+    <div class="row2 f" style="margin-top:12px"><div><div class="lbl" data-i="p_name"></div><input type="text" id="a_name" maxlength="80"></div><div><div class="lbl" data-i="p_vehicle"></div><input type="text" id="a_vehicle" maxlength="80"></div></div>
+    <div class="lbl" data-i="consent_h"></div>
+    <label class="tog" style="margin-bottom:8px"><span><b data-i="c_loc"></b><br><span class="small" data-i="c_loc_d"></span></span><input type="checkbox" id="a_loc"></label>
+    <label class="tog" style="margin-bottom:8px"><span><b data-i="c_chg"></b><br><span class="small" data-i="c_chg_d"></span></span><input type="checkbox" id="a_chg"></label>
+    <label class="tog" style="margin-bottom:8px"><span><b data-i="c_use"></b><br><span class="small" data-i="c_use_d"></span></span><input type="checkbox" id="a_use"></label>
+    <p class="small" data-i="privacy"></p>
+    <div style="display:flex;gap:10px;justify-content:space-between;margin-top:12px;flex-wrap:wrap"><button class="btn ghost" id="a_delete" style="color:var(--coral)" data-i="del_data"></button><span style="display:flex;gap:10px"><button class="btn ghost" id="setCancel" data-i="close"></button><button class="btn" id="setSave" data-i="save"></button></span></div>
+  </div>
+  <div id="acctNone" style="display:none"><div style="display:flex;justify-content:flex-end;gap:10px;margin-top:12px"><button class="btn ghost" id="setCancel2" data-i="close"></button><button class="btn" id="a_join" data-i="start"></button></div></div>
 </div></div>
 <div class="toast" id="toast"></div>
 
+<script src="config.js"></script>
 <script type="module" src="main.js"></script>
 </body>
 </html>
